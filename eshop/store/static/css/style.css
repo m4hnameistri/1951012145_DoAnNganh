@@ -1,0 +1,50 @@
+img.card-img-top.img-resize {
+    height: 200px;
+    object-fit: fill;
+    object-position: center center;
+    margin-bottom: -8px;
+}
+
+
+
+.card.col-product {
+    margin-bottom: 30px;
+    font-family: 'Roboto', sans-serif;
+}
+
+.product-title {
+    font-weight: bold;
+    color: #326e51;
+    margin-bottom: 5px !important;
+}
+.product-price{
+    position: relative;
+}
+.old-price{
+    font-size: 12px;
+    position: absolute;
+    right: 40px;
+    line-height: 20px;
+    text-decoration: line-through;
+}
+
+.discount-percent{
+    background: #ff5501;
+    margin-left: 5px;
+    padding: 0px 5px;
+    /* line-height: 1.42857143; */
+    border-radius: 2px;
+    position: absolute;
+    right: 0;
+    color: white;
+    font-size: 13px;
+}
+.new-price{
+    font-size: 16px;
+    color: #ff6600;
+    font-weight: bold;
+}
+.product-name {
+    font-size: 13px;
+}
+
