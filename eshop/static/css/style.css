@@ -48,3 +48,27 @@ img.card-img-top.img-resize {
     font-size: 13px;
 }
 
+.dieuchinh{
+    height: 120px !important;
+    min-width: 380px; 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ccc !important;
+    border-radius: 12px;
+    box-shadow: 0 5px 10px rgba(0,0,0,0.2);
+  }
+.dieuchinh span{
+    width: 100%;
+    text-align: center;
+    font-size: 55px;
+    font-weight: 600;
+    cursor: pointer !important;
+    user-select: none;
+}
+.dieuchinh span.num{
+    font-size: 50px;
+    border-right: 2px solid rgba(0,0,0,0.2);
+    border-left: 2px solid rgba(0,0,0,0.2);
+    pointer-events: none;
+}

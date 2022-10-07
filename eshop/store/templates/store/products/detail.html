@@ -23,17 +23,40 @@
                     <div class="col">
                         <div class="row p-3">
                             <div class="col-6">
-                                <label for="select">Qty</label>
+                                {% comment %} <label for="select">Qty</label>
                                 <select id="select">
                                     <option value="">1</option>
                                     <option value="">2</option>
                                     <option value="">3</option>
                                     <option value="">4</option>
-                                </select>
-
+                                </select> {% endcomment %}
+                                <div class="dieuchinh">
+                                    <span class="minus">-</span>
+                                    <span id="product_qty" class="num">01</span>
+                                    <span class="plus">+</span>
+                                </div>
+                                  <script>
+                                   const plus = document.querySelector(".plus"),
+                                    minus = document.querySelector(".minus"),
+                                    num = document.querySelector(".num");
+                                    let a = 1;
+                                    plus.addEventListener("click", ()=>{
+                                      a++;
+                                      a = (a < 10) ? "0" + a : a;
+                                      num.innerText = a;
+                                    });
+                                
+                                    minus.addEventListener("click", ()=>{
+                                      if(a > 1){
+                                        a--;
+                                        a = (a < 10) ? "0" + a : a;
+                                        num.innerText = a;
+                                      }
+                                    });
+                                
+                                  </script>
                             </div>
-                            <div class="col-6 text-end"><button type="button" class="btn btn-secondary btn-sm">Add to
-                                    basket</button></div>
+                            <div class="col-6 text-end"><button type="button" id="add-button" value= "{{product.id}}" class="btn btn-secondary btn-sm">Thêm vào giỏ</button></div>
                         </div>
                     </div>
                 </div>
@@ -42,4 +65,26 @@
 
     </div>
 </div>
+<script>
+    $(document).on('click', '#add-button', function (e){
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: '{% url "cart:cart_add" %}',
+            data: {
+                productid: $('#add-button').val(),
+                productqty: document.getElementById("product_qty").innerText,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'post'
+            },
+            success: function(json){
+                document.getElementById("cart_qty").innerText = json.soluong
+                console.log(json)
+            },
+            error: function (xhr, errmsg, err){
+                
+            }
+        });
+    })
+</script>
 {% endblock %}

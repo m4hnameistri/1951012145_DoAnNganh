@@ -3,13 +3,14 @@ from tabnanny import verbose
 from turtle import title
 from unicodedata import category
 from django.db import models
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, AbstractBaseUser, PermissionsMixin
 from django.urls import reverse
 
 # Create your models here.
 
-class User(AbstractUser):
+class User(AbstractBaseUser, PermissionsMixin):
     avatar = models.ImageField(upload_to='user_images/')
+    phone_number = models.CharField(max_length = 11)
 
 class ProductManager(models.Manager):
     def get_queryset(self):
