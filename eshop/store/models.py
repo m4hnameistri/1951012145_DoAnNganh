@@ -8,10 +8,9 @@ from django.urls import reverse
 
 # Create your models here.
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractUser):
     avatar = models.ImageField(upload_to='user_images/')
-    phone_number = models.CharField(max_length = 11)
-
+    
 class ProductManager(models.Manager):
     def get_queryset(self):
         return super(ProductManager, self).get_queryset().filter(is_active=True)
