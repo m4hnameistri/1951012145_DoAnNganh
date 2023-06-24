@@ -1,5 +1,6 @@
 {% extends '.\base.html'%}
 {% load static %}
+{% load mathfilters %}
 {% block title %} HOME PAGE {% endblock %}
 {% block content %} 
 
@@ -13,13 +14,13 @@
     <div>
     <div class="carousel-inner">
         <div class="carousel-item active">
-          <img src="https://via.placeholder.com/696x170" class="d-block w-100" alt="...">
+          <img src="https://media.hasaki.vn/hsk/1666345772homecogia-(8).jpg" class="d-block w-100" alt="...">
         </div>
         <div class="carousel-item">
-          <img src="https://via.placeholder.com/696x170" class="d-block w-100" alt="...">
+          <img src="https://media.hasaki.vn/hsk/16663466109f3947bf-e9ec-4ef6-a0fa-a244a845921b.png" class="d-block w-100" alt="...">
         </div>
         <div class="carousel-item">
-          <img src="https://via.placeholder.com/696x170" class="d-block w-100" alt="...">
+          <img src="https://media.hasaki.vn/hsk/1666345509homecogia-(9).jpg" class="d-block w-100" alt="...">
         </div>
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
@@ -43,19 +44,21 @@
       </div>
 
       <div class="product-group">
-          <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 g-3">
+          <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
             {% for product in products%}
               <div class="col">
                 <div class="card col-product"> <a class="text-dark text-decoration-none" href="{{product.get_absolute_url}}"> 
                       <img class="card-img-top img-resize" src="{{ product.image.url }}" alt="Card image cap">
                       <div class="card-body">
                         <div class="product-price">
-                            <span class='new-price'> 397.000 đ</span>
-                            <span class = "discount-percent">14%</span>
-                            <span class='old-price'>332.000 đ</span>
-                        </div>
+                          <span class='new-price'>{{ product.price}} đ</span>
+                          {% if product.old_price != 0 %}
+                          <span class = "discount-percent">{% widthratio product.price product.old_price 100 as sale%} {{100|sub:sale}}%</span>
+                          <span class='old-price px-1'>{{product.old_price}} đ</span>
+                          {% endif %}
+                      </div>
                         <p class="card-title product-title">{{ product.category.title }}</p>
-                        <p class="card-text product-name">{{ product.title}}</p>
+                        <p class="card-text product-name mb-2">{{ product.title}}</p>
                         <a href="#" class="btn btn-success w-100">Thêm vào giỏ hàng</a>
                       </div>
                     </a>

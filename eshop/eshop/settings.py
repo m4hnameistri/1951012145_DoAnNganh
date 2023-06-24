@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 
 import os
 from pathlib import Path
+import django_heroku
+import dj_database_url
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -40,6 +42,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'store.apps.StoreConfig',
     'cart.apps.CartConfig',
+    'payment.apps.PaymentConfig',
+    'mathfilters',
 ]
 
 MIDDLEWARE = [
@@ -127,11 +131,25 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static')
 ]
+django_heroku.settings(locals())
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+LOGIN_REDIRECT_URL = '/account/dashboard'
+# LOGOUT_REDIRECT_URL = 'store:login'
+LOGIN_URL = '/account/login'
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Stripe Payment
+# STRIPE_ENDPOINT_SECRET = 'whsec_d6a36fbacdf4224d5d573d008e7b240924eb124cdc83732ff31e0806928cfadc'
+# stripe listen --forward-to localhost:8000/payment/webhook/
+# whsec_d6a36fbacdf4224d5d573d008e7b240924eb124cdc83732ff31e0806928cfadc

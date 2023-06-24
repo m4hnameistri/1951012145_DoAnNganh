@@ -1,0 +1,63 @@
+{% extends '.\base.html'%}
+{% load static %}
+{% load mathfilters %}
+{% block title %} HOME PAGE {% endblock %}
+{% block content %} 
+<!--SHOW PRODUCTS-->
+<div class="list-product mt-5">
+    <div class="row">
+        <h2 class = "list-product-title">Danh sách sản phẩm</h2>
+        <div class="list-product-description pb-3">
+          <p>Kết quả tìm kiếm của {{request.GET.q}}</p>
+        </div>
+    </div>
+
+    <div class="product-group">
+        <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
+        {% for product in data %}
+            <div class="col">
+              <div class="card col-product"> <a class="text-dark text-decoration-none" href="{{product.get_absolute_url}}"> 
+                    <img class="card-img-top img-resize" src="{{ product.image.url }}" alt="Card image cap">
+                    <div class="card-body">
+                      <div class="product-price">
+                          <span class='new-price'>{{ product.price}} đ</span>
+                          {% if product.old_price != 0 %}
+                          <span class = "discount-percent">{% widthratio product.price product.old_price 100 as sale%} {{100|sub:sale}}%</span>
+                          <span class='old-price px-1'>{{product.old_price}} đ</span>
+                          {% endif %}
+
+                      </div>
+                      <p class="card-title product-title">{{ product.category.title }}</p>
+                      <p class="card-text product-name mb-2">{{ product.title}}</p>
+                      <button type="button" id="add-button" data-index="{{product.id}}" class="btn btn-success w-100 add-button">Thêm vào giỏ</button>
+                    </div>
+                  </a>
+              </div>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+
+<script>
+  $(document).on('click', '.add-button', function (e){
+      e.preventDefault();
+      $.ajax({
+          type: 'POST',
+          url: '{% url "cart:cart_add" %}',
+          data: {
+              productid: $(this).data('index'),
+              productqty: 1,
+              csrfmiddlewaretoken: '{{ csrf_token }}',
+              action: 'post'
+          },
+          success: function(json){
+              document.getElementById("cart_qty").innerText = json.soluong
+              console.log(json)
+          },
+          error: function (xhr, errmsg, err){
+              
+          }
+      });
+  })
+  {% endblock %} 

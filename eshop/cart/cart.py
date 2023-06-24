@@ -63,5 +63,13 @@ class Cart():
         cart = self.cart.copy()
         return Decimal(cart[product_id]['soluong']) * Decimal(cart[product_id]['price'])
 
+    def item_total_price(self):
+        cart = self.cart.copy()
+        return (Decimal(item['price']) * item['soluong'] for item in cart.values())
+
     def save(self):
         self.session.modified = True
+
+    def clear(self):
+        del self.session['session_key']
+        self.save()

@@ -1,17 +1,25 @@
+
 img.card-img-top.img-resize {
     height: 200px;
     object-fit: fill;
     object-position: center center;
     margin-bottom: -8px;
 }
+a#navbarDropdownAccount:hover {
+    color: black !important;
+}
 
-
-
+button#search_button {
+    background: #ff6600 !important;
+}
 .card.col-product {
     margin-bottom: 30px;
     font-family: 'Roboto', sans-serif;
 }
 
+.card.col-product:hover{
+    border-color: #ff6600 !important;
+}
 .product-title {
     font-weight: bold;
     color: #326e51;
@@ -50,7 +58,7 @@ img.card-img-top.img-resize {
 
 .dieuchinh{
     height: 120px !important;
-    min-width: 380px; 
+    min-width: 12-px; 
     display: flex;
     align-items: center;
     justify-content: center;
@@ -72,3 +80,4 @@ img.card-img-top.img-resize {
     border-left: 2px solid rgba(0,0,0,0.2);
     pointer-events: none;
 }
+

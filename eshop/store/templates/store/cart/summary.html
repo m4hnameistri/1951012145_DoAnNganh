@@ -1,64 +1,87 @@
 {% extends '.\base.html'%}
 {% load static %}
 {% block title %} GIỎ HÀNG {% endblock %}
-{% block content %} 
-<main class="pt-5">
-    <div class="container">
-      <h1 class="h5">Shopping cart</h1>
-      {% for item in cart %}
-      {% with product=item.product %}
-      <div data-index="{{product.id}}" class="row mb-4 border product-item">
-        <div class="col-md-3 col-lg-2 order-md-first bg-light">
-          <img class="img-fluid mx-auto d-block" width="120px" alt="Responsive image" src="{{ product.image.url }}">
-        </div>
-        <div class="col-md-9 col-lg-10 ps-md-3 ps-lg-10">
-          <a href="{{ product.get_absolute_url }}" class="text-decoration-none text-reset">
-            <h1 class="h5 pt-2">{{ product.title }}</h1>
-          </a>
-          <div class="border">
-            <div class="col border-bottom">
-              <div class="row p-3">
-                <div class="col-6">Hardback Book</div>
-                <div class="col-6 text-end"><span id="item-total{{product.id}}"class="h6 fw-bold item-total">£{{ item.total_price }}</span></div>
-              </div>
-            </div>
-            <div class="col">
-              <div class="row p-3">
-                <div class="col-12">
-                  <label for="select">Qty</label>
-                  <select id="select{{product.id}}">
-                    <option selected>
-                      {{item.soluong}}
-                    </option>
-                    <option value="">1</option>
-                    <option value="">2</option>
-                    <option value="">3</option>
-                    <option value="">4</option>
-                  </select>
-                  <button type="button" id="update-button" data-index="{{product.id}}"
-                    class="btn btn-outline-secondary btn-sm update-button">
-                    Update
-                  </button>
-                  <button type="button" id="delete-button" data-index="{{product.id}}"
-                    class="btn btn-outline-secondary btn-sm delete-button">
-                    Delete
-                  </button>
-                </div>
+{% block content %}
+
+<style>
+  .checkout p, .checkout div.total {
+    color: #ff6600 !important;
+}
+  .checkout {
+    font-family: 'Roboto', sans-serif;
+
+  }
+</style>
+
+
+  <main class="container my-5" id="cartList">
+
+    <div class="row">
+      <div class="col-md-9">
+        <h3 class="my-4 border-bottom pb-1">Giỏ hàng của bạn</h3>
+        <table class="table table-bordered">
+      <thead>
+        <tr bgcolor="grey" border="2">
+          <th>Sản phẩm</th>
+          <th>Số lượng</th>
+          <th>Giá tiền</th>
+          <th>Thành tiền</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in cart %}
+        {% with product=item.product %}
+        <tr class="product-item" data-index="{{product.id}}">
+          <td class = "w-25">
+            <img src="{{ product.image.url }}" width="50" />
+            <p><a href="{{item.product.get_absolute_url}}" class = "text-decoration-none fw-bold text-dark">{{product.title}}</a></p>
+          </td>
+          <td>
+            <select id="select{{product.id}}" style="width:50px;height:31px;">
+              <option value="" selected disabled hidden>{{item.soluong}}</option>
+              <option value="">1</option>
+              <option value="">2</option>
+              <option value="">3</option>
+              <option value="">4</option>
+              <option value="">5</option>
+            </select>
+          </td>
+          <td class = "w-25">{{product.price}}</td>
+          <td class = "w-25"id = 'item-total{{product.id}}'>{% widthratio product.price 1 item.soluong %}</td>
+          <td class = "w-25">
+            <a type="button" id="update-button" data-index="{{product.id}}" class="update-button text-decoration-none btn btn-primary small p-2">Cập nhật</a>
+            <a type="button" id="delete-button" data-index="{{product.id}}" class="delete-button text-decoration-none btn btn-danger small m-1">Xóa</a>
+          </td>
+        </tr>
+        {% endwith %} 
+        {% endfor %}
+      </tbody>
+    </table>
+      </div>
+      <div class="col-md-3">
+        <h3 class="my-4 border-bottom pb-1">Thông tin hóa đơn</h3>
+        <div class="card">
+          <div class="card-body">
+            <div class="checkout text-end">
+              <p class = 'fw-bold'>Hóa đơn của bạn</p>
+              <hr />
+              <div class="">Tạm tính: <div id="subtotal" class="d-inline-flex text-end fw-bold">{{cart.total_cart_price}}</div><span class="fw-bold"> đ</span></div>
+              <div id="">Phí vận chuyển <span class="small">(Dự kiến 3 ngày)</span>: <span class="fw-bold"> 0 đ</span></div>
+              <hr />
+              <div class="pt-2">Tổng cộng: <div id="total" class="d-inline-flex fw-bold h5 total">{{cart.total_cart_price}}</div><span class="fw-bold"> đ</span></div>
+              <div class="d-grid gap-2 mt-2">
+                <a role="button" href="{% url "payment:cart" %}" class="btn btn-success fw-bold" type="button">Tiến hành đặt hàng</a>
               </div>
             </div>
           </div>
         </div>
       </div>
-      {% endwith %}
-      {% endfor %}
-      <div class="col-12 text-end">
-        <div class="h6 fw-bold">Sub Total: £<div id="subtotal" class="d-inline-flex">{{cart.total_cart_price}}</div></div>
-      </div>
     </div>
   </main>
-  
+
   <script>
-    // Delete Item
+    // Xóa sản phẩm
     $(document).on('click', '.delete-button', function (e) {
       e.preventDefault();
       var prodid = $(this).data('index');
@@ -74,12 +97,13 @@
           $('.product-item[data-index="' + prodid + '"]').remove();
           document.getElementById("cart_qty").innerHTML = json.cartqty
           document.getElementById("subtotal").innerHTML = json.totalcartprice
+          document.getElementById("total").innerHTML = json.totalcartprice
         },
         error: function (xhr, errmsg, err) {}
       });
     })
   
-    // Update Item
+    // Cập nhật sản phẩm
     $(document).on('click', '.update-button', function (e) {
       e.preventDefault();
       var prodid = $(this).data('index');
@@ -96,6 +120,9 @@
           document.getElementById("cart_qty").innerHTML = json.cartqty
           document.getElementById("subtotal").innerHTML = json.totalcartprice
           document.getElementById("item-total" + prodid).innerHTML = json.itemtotal
+          document.getElementById("total").innerHTML = json.totalcartprice
+
+
         },
         error: function (xhr, errmsg, err) {}
       });

@@ -1,10 +1,15 @@
 {% extends '.\base.html'%}
 {% load static %}
-{% block title %} HOME PAGE {% endblock %}
+{% load mathfilters %}
+{% block title %} Trang chủ {% endblock %}
 {% block content %} 
 
+<style>
+  .card.col-product:hover {
+    border-color: #ff6600;}
+</style>
 <!--SLIDER-->
-<div id="carouselExampleIndicators" class="carousel slide mt-4" data-bs-ride="carousel">
+<div id="carouselExampleIndicators" class="carousel slide py-5" data-bs-ride="carousel">
     <div class="carousel-indicators">
       <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
       <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1" aria-label="Slide 2"></button>
@@ -13,13 +18,13 @@
     <div>
     <div class="carousel-inner">
         <div class="carousel-item active">
-          <img src="https://via.placeholder.com/696x170" class="d-block w-100" alt="...">
+          <img src="https://media.hasaki.vn/hsk/1666345772homecogia-(8).jpg" class="d-block w-100" alt="...">
         </div>
         <div class="carousel-item">
-          <img src="https://via.placeholder.com/696x170" class="d-block w-100" alt="...">
+          <img src="https://media.hasaki.vn/hsk/16663466109f3947bf-e9ec-4ef6-a0fa-a244a845921b.png" class="d-block w-100" alt="...">
         </div>
         <div class="carousel-item">
-          <img src="https://via.placeholder.com/696x170" class="d-block w-100" alt="...">
+          <img src="https://media.hasaki.vn/hsk/1666345509homecogia-(9).jpg" class="d-block w-100" alt="...">
         </div>
     </div>
     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
@@ -37,26 +42,32 @@
   <div class="list-product mt-5">
       <div class="row">
           <h2 class = "list-product-title">Danh sách sản phẩm</h2>
-          <div class="list-product-description pb-3">
-            <p>List product description</p>
+          <div class="list-product-description h-50">
+            <p>Sản phẩm nổi bật</p>
           </div>
       </div>
+    <hr>
 
       <div class="product-group">
-          <div class="row row-cols-2 row-cols-sm-3 row-cols-md-5 g-3">
+          <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
             {% for product in products%}
               <div class="col">
-                <div class="card col-product"> <a class="text-dark text-decoration-none" href="{{product.get_absolute_url}}"> 
+                <div class="card col-product">
+                    <a class="text-dark text-decoration-none" href="{{product.get_absolute_url}}">
                       <img class="card-img-top img-resize" src="{{ product.image.url }}" alt="Card image cap">
+                      
                       <div class="card-body">
                         <div class="product-price">
-                            <span class='new-price'> 397.000 đ</span>
-                            <span class = "discount-percent">14%</span>
-                            <span class='old-price'>332.000 đ</span>
+                            <span class='new-price'>{{ product.price}} đ</span>
+                            {% if product.old_price != 0 %}
+                            <span class = "discount-percent">{% widthratio product.price product.old_price 100 as sale%} {{100|sub:sale}}%</span>
+                            <span class='old-price px-1'>{{product.old_price}} đ</span>
+                            {% endif %}
+
                         </div>
                         <p class="card-title product-title">{{ product.category.title }}</p>
                         <p class="card-text product-name mb-2">{{ product.title}}</p>
-                        <a href="#" class="btn btn-success w-100">Thêm vào giỏ hàng</a>
+                        <button type="button" id="add-button" data-index="{{product.id}}" class="btn btn-success w-100 add-button">Thêm vào giỏ</button>
                       </div>
                     </a>
                 </div>
@@ -66,8 +77,28 @@
       </div>
   </div>
 
-
-
+  <script>
+    $(document).on('click', '.add-button', function (e){
+        e.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: '{% url "cart:cart_add" %}',
+            data: {
+                productid: $(this).data('index'),
+                productqty: 1,
+                csrfmiddlewaretoken: '{{ csrf_token }}',
+                action: 'post'
+            },
+            success: function(json){
+                document.getElementById("cart_qty").innerText = json.soluong
+                console.log(json)
+            },
+            error: function (xhr, errmsg, err){
+                
+            }
+        });
+    })
+</script>
 <!--END PRODUCTS-->
   
 {% endblock %}
