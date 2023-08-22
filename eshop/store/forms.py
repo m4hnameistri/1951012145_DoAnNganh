@@ -66,16 +66,25 @@ class EditInfoForm(forms.ModelForm):
     first_name = forms.CharField(
         label='Tên', min_length=2, max_length=50, widget=forms.TextInput(
             attrs={'class': 'form-control mb-3', 'placeholder': 'Tên của bạn', 'id': 'form-firstname'}))
+    phone_number = forms.CharField(
+        label='Số điện thoại', min_length=10, max_length=11, widget=forms.TextInput(
+            attrs={'class': 'form-control mb-3', 'placeholder': 'Số điện thoại của bạn', 'id': 'form-phone'}))
+    address_1 = forms.CharField(
+        label='Địa chỉ:', min_length=10, max_length=255, widget=forms.TextInput(
+            attrs={'class': 'form-control mb-3', 'placeholder': 'Địa chỉ của bạn', 'id': 'form-address'}))
 
     class Meta:
         model = User
-        fields = ('email', 'last_name', 'first_name',)
+        fields = ('email', 'last_name', 'first_name', 'phone_number', 'address_1')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['username'].required = False
         self.fields['first_name'].required = True
         self.fields['email'].required = True
+        self.fields['phone_number'].required = False
+        self.fields['address_1'].required = False
+
     
 class ResetPasswordForm(PasswordResetForm):
     email = forms.EmailField(max_length=100, help_text = "Required", widget=forms.TextInput(

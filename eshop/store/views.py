@@ -1,6 +1,7 @@
 import imp
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth import login, logout
+from django.contrib import messages
 from django.shortcuts import get_object_or_404,render, redirect
 from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
@@ -10,7 +11,7 @@ from .tokens import activation_token
 from .models import User, Order
 from django.http import HttpResponse
 from django.db.models import Q
-
+from django.core.mail import EmailMessage
 
 from .models import Category, Product
 from .forms import (CreateUserForm, EditInfoForm)
@@ -35,6 +36,45 @@ def search(request):
     data=Product.objects.filter(Q(title__icontains = q) | Q(category__title__icontains = q)).order_by('-id')
 
     return render(request,'products/search.html',{'data':data})
+
+# def user_register(request):
+#     if request.user.is_authenticated:
+#         return redirect('store:dashboard')
+
+#     if request.method == 'POST':
+#         # We don't want anyone can be able to register account if they don't
+#         # actually post any data to us so this if will provide validation check.
+
+#         form = CreateUserForm(request.POST)
+#         # Create a form instance with POST data
+#         if form.is_valid():
+#             user = form.save(commit= False)
+#             # This save() method accepts an optional commit keyword argument, which accepts either True or False. 
+#             # If you call save() with commit=False, then it will return an object that hasn't yet been saved to the database.
+
+#             user.email = form.cleaned_data['email']
+#             # user.username = form.cleaned_data['user_name']
+#             user.set_password(form.cleaned_data['password'])
+#             user.is_active = False
+#             # Set is_active = False vì cần 1 thủ tục kích hoạt via email để is_active = True
+#             user.save()
+
+#             #Setup email
+#             current_site = get_current_site(request)
+#             subject = 'Activate your account'
+#             message = render_to_string('account/activate_account.html',
+#             {
+#                 'user': user,
+#                 'domain': current_site.domain,
+#                 'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+#                 # encoding a byte string into base64 string so we can use it in the url,
+#                 'token': activation_token.make_token(user),
+#             })
+#             user.email_user(subject = subject, message = message)
+#             return HttpResponse("Đăng kí thành công !!!")
+#     else:
+#         form = CreateUserForm()
+#     return render(request, 'account/register.html', {'form': form})
 
 def user_register(request):
     if request.user.is_authenticated:
@@ -69,11 +109,17 @@ def user_register(request):
                 # encoding a byte string into base64 string so we can use it in the url,
                 'token': activation_token.make_token(user),
             })
-            user.email_user(subject = subject, message = message)
-            return HttpResponse("Đăng kí thành công !!!")
+            # user.email_user(subject = subject, message = message)
+            email = EmailMessage(subject = subject, body = message, to= [user.email])
+            if email.send():
+                return HttpResponse("Registration Successful !" f'Dear <b>{user}</b>, please go to you email <b>{user.email}</b> inbox and click on \
+                received activation link to confirm and complete the registration. <b>Note:</b> Check your spam folder.' )
+            else:
+                return HttpResponse(request, f'Problem sending email to {user.email}, check if you typed it correctly.')
     else:
         form = CreateUserForm()
     return render(request, 'account/register.html', {'form': form})
+
 
 def user_activate(request, uidb64, token):
     uid = force_text(urlsafe_base64_decode(uidb64))
@@ -97,6 +143,13 @@ def dashboard(request):
 
 
 # CHƯA LÀM
+@login_required
+def profile(request):
+    return render(
+            request,
+            "account/profile.html",
+            )
+
 @login_required
 def edit_info(request):
     if request.method == "POST":

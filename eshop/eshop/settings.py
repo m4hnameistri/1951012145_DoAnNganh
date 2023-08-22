@@ -147,7 +147,17 @@ LOGIN_REDIRECT_URL = '/account/dashboard'
 # LOGOUT_REDIRECT_URL = 'store:login'
 LOGIN_URL = '/account/login'
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+### Emailing Settings
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_FROM = 'tri01253789410@gmail.com'
+EMAIL_HOST_USER = 'tri01253789410@gmail.com'
+EMAIL_HOST_PASSWORD = 'zfwawivyxlrjodcq'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+# This means the token will expire after 15mins(900seconds)
+PASSWORD_RESET_TIMEOUT = 900
 
 # Stripe Payment
 # STRIPE_ENDPOINT_SECRET = 'whsec_d6a36fbacdf4224d5d573d008e7b240924eb124cdc83732ff31e0806928cfadc'
