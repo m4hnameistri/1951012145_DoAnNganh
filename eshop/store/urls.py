@@ -29,5 +29,5 @@ urlpatterns = [
     path('account/profile/', views.profile, name = 'profile'),
     path('account/edit_info/', views.edit_info, name = 'edit_info'),
     path('search',views.search,name='search'),
-
+    path('owner/stats/', views.stats_view, name='stats'),
 ]

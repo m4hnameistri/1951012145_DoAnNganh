@@ -71,7 +71,7 @@
               <hr />
               <div class="pt-2">Tổng cộng: <div id="total" class="d-inline-flex fw-bold h5 total">{{cart.total_cart_price}}</div><span class="fw-bold"> đ</span></div>
               <div class="d-grid gap-2 mt-2">
-                <a role="button" href="{% url "payment:cart" %}" class="btn btn-success fw-bold" type="button">Tiến hành đặt hàng</a>
+                <a role="button" href="{% url 'checkout:paypal_checkout' %}" class="btn btn-success fw-bold" type="button">Tiến hành đặt hàng</a>
               </div>
             </div>
           </div>
@@ -79,7 +79,6 @@
       </div>
     </div>
   </main>
-
   <script>
     // Xóa sản phẩm
     $(document).on('click', '.delete-button', function (e) {

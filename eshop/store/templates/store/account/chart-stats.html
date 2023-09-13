@@ -1,0 +1,145 @@
+{% extends "admin/base_site.html" %}
+
+{% load static %}
+{% comment %} <scripts href={% static 'js/stats.js' %}></scripts> {% endcomment %}
+
+{% block content %}
+<script src= "https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.js"> </script>
+<div class="row mb-5">
+    <form class='form-inline'>
+        <div class="form-group">
+            <input type="number" min="1" max="12" placeholder="Nhập tháng..." name="month" class="form-control mx-3" />
+        </div>
+        <div class="form-group">
+            <label class="mx-2">Từ ngày</label>
+            <input type="date" name="from_date" class="form-control" />
+        </div>
+        <div class="form-group mx-sm-3">
+            <label class="mx-2">Đến ngày</label>
+            <input type="date" name="to_date" class="form-control" />
+        </div>
+        <div>
+            <input type="submit" value="Lọc dữ liệu" class="btn btn-info" />
+        </div>
+    </form>
+</div>
+<div class="row">
+    <div class="col-sm-6">
+        <canvas id="myChart" width="400" height="500"></canvas>
+    </div>
+    <div class="col-sm-6">
+        <canvas id="myChart2" width="400" height="500"></canvas>       
+    </div>
+</div>
+{% comment %} {% if orders %}
+{% for o in orders  %}
+<h1> {{o.id}}</h1>
+{% endfor %}
+{% endif %} {% endcomment %}
+{% for c in revenue_by_month %}
+<div>
+    <h1>{{c.1}}</h1>
+</div>
+{% endfor %} 
+
+<script>
+function RevenueByMonthChart(ctx){
+        var labels = []
+        var data = [];
+        {% for r in revenue_by_month %}
+            labels.push({{r.0}})
+            data.push({{r.1}})
+    
+        {% endfor %}
+    
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Number of Orders by Month',
+                    data: data,
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255, 99, 132, 1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: 0
+                    }
+                }
+            }
+        });
+    }; 
+
+function CountByMonthChart(ctx){
+    var labels = []
+    var data = []
+    {% for c in count_by_month %}
+        labels.push({{c.0}})
+        data.push({{c.1}})
+    {% endfor %}
+
+    var myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Number of Orders by Month',
+                data: data,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+}; 
+
+window.onload = function() {
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const ctx2 = document.getElementById('myChart2').getContext('2d');
+
+    RevenueByMonthChart(ctx);
+    CountByMonthChart(ctx2);
+
+}
+</script>
+
+{% endblock %}

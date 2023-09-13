@@ -1,3 +1,4 @@
+from collections import Counter
 import imp
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth import login, logout
@@ -7,10 +8,16 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.contrib.auth.decorators import login_required
+from django.db.models import Sum, Count, DateField
 from .tokens import activation_token
 from .models import User, Order
 from django.http import HttpResponse
 from django.db.models import Q
+from django.db.models.functions import Cast
+from functools import reduce
+import operator
+from django.db.models.functions import TruncMonth,ExtractMonth, ExtractYear
+
 from django.core.mail import EmailMessage
 
 from .models import Category, Product
@@ -166,3 +173,54 @@ def user_orders(request):
     user_id = request.user.id
     orders = Order.objects.filter(user_id=user_id).filter(billing_status=True)
     return orders
+
+def number_order_by_month(month = None, from_date = None, to_date = None):
+    orders = Order.objects.filter(billing_status = True)
+    if month:
+        orders = orders.filter(created__month = month)
+    if from_date:
+        orders = orders.filter(created__gte = from_date)
+    if to_date:
+        orders = orders.filter(created__lt = to_date)
+    # count_by_month = orders.raw("SELECT strftime('%m', created) as month, COUNT(*) as count, id FROM store_order WHERE billing_status = True GROUP BY strftime('%m', created)")
+    count_by_month_data = orders.values('created__month').annotate(count=Count('id'))
+    l = []
+    for i in count_by_month_data:
+        l.append({i['created__month']:i['count']})
+    counter = Counter()
+    for d in l:
+        counter.update(d)
+
+    count_by_month = dict(counter).items()
+    return count_by_month
+
+def revenue_by_month(month = None, from_date = None, to_date = None):
+    orders = Order.objects.filter(billing_status = True)
+    if month:
+        orders = orders.filter(created__month = month)
+    if from_date:
+        orders = orders.filter(created__gte = from_date)
+    if to_date:
+        orders = orders.filter(created__lt = to_date)
+    # count_by_month = orders.raw("SELECT strftime('%m', created) as month, COUNT(*) as count, id FROM store_order WHERE billing_status = True GROUP BY strftime('%m', created)")
+    revenue_by_month_data = orders.values('created__month').annotate(revenue=Sum('total_paid'))
+    l = []
+    for i in revenue_by_month_data:
+        l.append({i['created__month']:i['revenue']})
+    counter = Counter()
+    for d in l:
+        counter.update(d)
+    result = dict(counter).items()
+    return result
+
+def stats_view(request):
+    
+    month = request.GET.get('month')
+    from_date = request.GET.get('from_date')
+    to_date = request.GET.get('to_date')
+
+    count_by_month = number_order_by_month(month=month, from_date=from_date, to_date=to_date)
+    revenue_by_month_data = revenue_by_month(month=month, from_date=from_date, to_date=to_date)
+
+    return render(request, "account/chart-stats.html", {'count_by_month': count_by_month, 'revenue_by_month': revenue_by_month_data})
+

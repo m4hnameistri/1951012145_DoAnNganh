@@ -72,7 +72,10 @@ class EditInfoForm(forms.ModelForm):
     address_1 = forms.CharField(
         label='Địa chỉ:', min_length=10, max_length=255, widget=forms.TextInput(
             attrs={'class': 'form-control mb-3', 'placeholder': 'Địa chỉ của bạn', 'id': 'form-address'}))
-
+    address_2 = forms.CharField(
+        label='Địa chỉ 2:', min_length=10, max_length=255, widget=forms.TextInput(
+            attrs={'class': 'form-control mb-3', 'placeholder': 'Địa chỉ của bạn', 'id': 'form-address'}))
+    
     class Meta:
         model = User
         fields = ('email', 'last_name', 'first_name', 'phone_number', 'address_1')
@@ -84,6 +87,7 @@ class EditInfoForm(forms.ModelForm):
         self.fields['email'].required = True
         self.fields['phone_number'].required = False
         self.fields['address_1'].required = False
+        self.fields['address_2'].required = False
 
     
 class ResetPasswordForm(PasswordResetForm):

@@ -51,8 +51,8 @@
                 <a class="text-decoration-none fw-bold text-secondary" href="{{ item.product.get_absolute_url }}">
                   <p class="card-text small">{{item.product|title}}</p>
                 </a>
-                <p class="card-text small">{{order.address1}}</p>
-                <p class="card-text small">{{order.phone}}</p>
+                <p class="card-text small">x{{item.quantity}}</p>
+                <p class="card-text small">{{item.price|floatformat:0}}</p>
               </div>
             </div>
           </div>

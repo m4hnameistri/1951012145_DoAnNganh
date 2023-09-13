@@ -14,6 +14,8 @@ import os
 from pathlib import Path
 import django_heroku
 import dj_database_url
+from django.shortcuts import redirect
+from django.urls import reverse
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -34,6 +36,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'jazzmin',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -42,10 +45,27 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'store.apps.StoreConfig',
     'cart.apps.CartConfig',
-    'payment.apps.PaymentConfig',
+    'checkout.apps.CheckoutConfig',
+    'paypal.standard.ipn',
     'mathfilters',
 ]
 
+JAZZMIN_SETTINGS = {
+    "topmenu_links": [
+
+        # Url that gets reversed (Permissions can be added)
+        {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
+
+        # external url that opens in a new window (Permissions can be added)
+        {"name": "Chart", "url": "chart/"},
+
+        # model admin to link to (Permissions checked against model)
+        {"model": "auth.User"},
+
+        # App with dropdown menu to all its models pages (Permissions checked against models)
+        {"app": "books"},
+    ],
+}
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -136,6 +156,8 @@ django_heroku.settings(locals())
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# USE_THOUSAND_SEPARATOR = True
+
 
 
 # Default primary key field type
@@ -159,7 +181,5 @@ EMAIL_USE_TLS = True
 # This means the token will expire after 15mins(900seconds)
 PASSWORD_RESET_TIMEOUT = 900
 
-# Stripe Payment
-# STRIPE_ENDPOINT_SECRET = 'whsec_d6a36fbacdf4224d5d573d008e7b240924eb124cdc83732ff31e0806928cfadc'
-# stripe listen --forward-to localhost:8000/payment/webhook/
-# whsec_d6a36fbacdf4224d5d573d008e7b240924eb124cdc83732ff31e0806928cfadc
+PAYPAL_RECEIVER_EMAIL = 'sb-rd1jy27136850@business.example.com'
+PAYPAL_TEST = True
