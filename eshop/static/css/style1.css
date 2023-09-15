@@ -55,27 +55,32 @@ button#search_button {
 .product-name {
     font-size: 13px;
 }
+tr > th {
+    text-align: center;
+    vertical-align: middle;
+}
 
 .dieuchinh{
-    height: 20px ;
-    min-width: 12-px; 
+    height: 50px ;
+    width: 100px;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    align-items: center !important;
+    /* justify-content: center !important; */
     background-color: #ccc !important;
-    border-radius: 12px;
+    border-radius: 5px;
     box-shadow: 0 5px 10px rgba(0,0,0,0.2);
   }
 .dieuchinh span{
     width: 100%;
     text-align: center;
-    font-size: 55px;
+    font-size: 30px;
     font-weight: 600;
     cursor: pointer !important;
     user-select: none;
 }
 .dieuchinh span.num{
-    font-size: 50px;
+    font-size: 30px;
+    font-weight: 500;
     border-right: 2px solid rgba(0,0,0,0.2);
     border-left: 2px solid rgba(0,0,0,0.2);
     pointer-events: none;

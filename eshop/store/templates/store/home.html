@@ -1,5 +1,6 @@
 {% extends '.\base.html'%}
 {% load static %}
+{% load humanize %}
 {% load mathfilters %}
 {% block title %} Trang chủ {% endblock %}
 {% block content %} 
@@ -50,7 +51,7 @@
 
       <div class="product-group">
           <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
-            {% for product in products%}
+            {% for product in page_obj %}
               <div class="col">
                 <div class="card col-product">
                     <a class="text-dark text-decoration-none" href="{{product.get_absolute_url}}">
@@ -58,10 +59,10 @@
                       
                       <div class="card-body">
                         <div class="product-price">
-                            <span class='new-price'>{{ product.price}} đ</span>
+                            <span class='new-price'>{{ product.price|intcomma}} đ</span>
                             {% if product.old_price != 0 %}
                             <span class = "discount-percent">{% widthratio product.price product.old_price 100 as sale%} {{100|sub:sale}}%</span>
-                            <span class='old-price px-1'>{{product.old_price}} đ</span>
+                            <span class='old-price px-1'>{{product.old_price|intcomma}} đ</span>
                             {% endif %}
 
                         </div>
@@ -76,6 +77,23 @@
           </div>
       </div>
   </div>
+  <div>
+  </div>
+  <nav aria-label="Page navigation example" class="mt-4">
+    <ul class="pagination justify-content-center">
+      <li class="page-item">
+        {% if page_obj.has_previous %}       
+          <a class="page-link" href="?page={{page_obj.previous_page_number}}" tabindex="-1">Previous</a>
+        {% endif %}
+      </li>
+      <li class="page-item"><a class="page-link" href="?page={{page_obj.number}}">{{page_obj.number}}</a></li>
+      {% if page_obj.has_next %}
+      <li class="page-item">      
+          <a class="page-link" href="?page={{page_obj.next_page_number}}">Next</a>
+      </li>
+      {% endif%}
+    </ul>
+  </nav>
 
   <script>
     $(document).on('click', '.add-button', function (e){

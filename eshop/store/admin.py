@@ -4,7 +4,7 @@ from .models import Category, Product, User, Order, OrderItem
 from django.urls import path
 from .views import stats_view
 from django.template.response import TemplateResponse
-from .views import number_order_by_month, revenue_by_month
+from .views import number_order_by_month, revenue_by_month, number_order_by_day, revenue_by_day
 
 
 # Register your models here.
@@ -21,9 +21,15 @@ class CustomAdminSite(admin.AdminSite):
         month = request.GET.get('month')
         from_date = request.GET.get('from_date')
         to_date = request.GET.get('to_date')
-        count_by_month = number_order_by_month(month=month, from_date=from_date, to_date=to_date)
-        revenue_by_month_data = revenue_by_month(month=month, from_date=from_date, to_date=to_date)
-        return TemplateResponse(request, "account/chart-stats.html", {'count_by_month': count_by_month, 'revenue_by_month': revenue_by_month_data})
+        orders = Order.objects.filter(billing_status = True)
+        count_by_month = number_order_by_month(orders=orders ,month=month, from_date=from_date, to_date=to_date)
+        revenue_by_month_data = revenue_by_month(orders=orders ,month=month, from_date=from_date, to_date=to_date)
+        count_by_day = number_order_by_day(orders=orders ,month=month, from_date=from_date, to_date=to_date)
+        revenue_by_day_data = revenue_by_day(orders=orders ,month=month, from_date=from_date, to_date=to_date)
+
+        return TemplateResponse(request, "account/chart-stats.html", 
+                                {'count_by_month': count_by_month, 'revenue_by_month': revenue_by_month_data, 
+                                    'count_by_day': count_by_day, 'revenue_by_day': revenue_by_day_data})
     
 custom_admin_site = CustomAdminSite('myweb')
 

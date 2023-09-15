@@ -24,84 +24,38 @@
     </form>
 </div>
 <div class="row">
-    <div class="col-sm-6">
+    <div class="col-sm-6 px-5">
         <canvas id="myChart" width="400" height="500"></canvas>
     </div>
-    <div class="col-sm-6">
+    <div class="col-sm-6 px-5">
         <canvas id="myChart2" width="400" height="500"></canvas>       
     </div>
 </div>
-{% comment %} {% if orders %}
-{% for o in orders  %}
-<h1> {{o.id}}</h1>
-{% endfor %}
-{% endif %} {% endcomment %}
-{% for c in revenue_by_month %}
-<div>
-    <h1>{{c.1}}</h1>
+<div class="row">
+    <div class="col-sm-6 px-5">
+        <canvas id="myChart3" width="400" height="500"></canvas>
+    </div>
+    <div class="col-sm-6 px-5">
+        <canvas id="myChart4" width="400" height="500"></canvas>
+    </div>
 </div>
-{% endfor %} 
 
 <script>
-function RevenueByMonthChart(ctx){
-        var labels = []
-        var data = [];
-        {% for r in revenue_by_month %}
-            labels.push({{r.0}})
-            data.push({{r.1}})
-    
-        {% endfor %}
-    
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Number of Orders by Month',
-                    data: data,
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.2)',
-                        'rgba(54, 162, 235, 0.2)',
-                        'rgba(255, 206, 86, 0.2)',
-                        'rgba(75, 192, 192, 0.2)',
-                        'rgba(153, 102, 255, 0.2)',
-                        'rgba(255, 159, 64, 0.2)'
-                    ],
-                    borderColor: [
-                        'rgba(255, 99, 132, 1)',
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 206, 86, 1)',
-                        'rgba(75, 192, 192, 1)',
-                        'rgba(153, 102, 255, 1)',
-                        'rgba(255, 159, 64, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: 0
-                    }
-                }
-            }
-        });
-    }; 
 
-function CountByMonthChart(ctx){
-    var labels = []
-    var data = []
-    {% for c in count_by_month %}
-        labels.push({{c.0}})
-        data.push({{c.1}})
-    {% endfor %}
-
+function loadChart(ctx, type, labels, data, label){
+    colors = []
+    borderColors = []
+    r = Math.random() * 255
+    g = Math.random() * 255
+    b = Math.random() * 255
+    colors.push(`rgba(${r}, ${g}, ${b}, 0.2)`)
+    borderColors.push(`rgba(${r}, ${g}, {$b}, 1)`)
     var myChart = new Chart(ctx, {
-        type: 'bar',
+        type: type,
         data: {
             labels: labels,
             datasets: [{
-                label: 'Number of Orders by Month',
+                label: label,
                 data: data,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
@@ -131,14 +85,48 @@ function CountByMonthChart(ctx){
         }
     });
 }; 
-
 window.onload = function() {
+    let data1 = []
+    let labels1 = []
+    let data2 = []
+    let labels2 =[]
+    let data3 = []
+    let labels3 =[]
+    let data4 = []
+    let labels4 =[]
+
+    {% for r in revenue_by_month %}
+    labels1.push({{r.0}})
+    data1.push({{r.1}})
+    {% endfor %}
+
+    {% for c in count_by_month %}
+    labels2.push({{c.0}})
+    data2.push({{c.1}})
+    {% endfor %}
+
+    
+    {% for r in revenue_by_day %}
+    labels3.push({{r.0}})
+    data3.push({{r.1}})
+    {% endfor %}
+
+    {% for c in count_by_day %}
+    labels4.push({{c.0}})
+    data4.push({{c.1}})
+    {% endfor %}
+
     const ctx = document.getElementById('myChart').getContext('2d');
     const ctx2 = document.getElementById('myChart2').getContext('2d');
+    const ctx3 = document.getElementById('myChart3').getContext('2d');
+    const ctx4 = document.getElementById('myChart4').getContext('2d');
 
-    RevenueByMonthChart(ctx);
-    CountByMonthChart(ctx2);
+    loadChart(ctx, 'line', labels1, data1, 'Revenue by Month');
+    loadChart(ctx2, 'bar', labels2, data2,'Number of Orders by Month');
+    loadChart(ctx3, 'line', labels3, data3,'Revenue by Day');
+    loadChart(ctx4, 'bar', labels4, data4, 'Number of Orders by Day');
 
+    
 }
 </script>
 

@@ -19,6 +19,7 @@ import operator
 from django.db.models.functions import TruncMonth,ExtractMonth, ExtractYear
 
 from django.core.mail import EmailMessage
+from django.core.paginator import Paginator
 
 from .models import Category, Product
 from .forms import (CreateUserForm, EditInfoForm)
@@ -27,7 +28,11 @@ from .forms import (CreateUserForm, EditInfoForm)
 
 def product_all(request):
     products = Product.products.all()
-    return render(request, 'store/home.html', {'products': products})
+    paginator = Paginator(products, 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
+    return render(request, 'store/home.html', {'products': products, 'page_obj': page_obj})
 
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug = slug, in_stock = True)
@@ -174,8 +179,7 @@ def user_orders(request):
     orders = Order.objects.filter(user_id=user_id).filter(billing_status=True)
     return orders
 
-def number_order_by_month(month = None, from_date = None, to_date = None):
-    orders = Order.objects.filter(billing_status = True)
+def number_order_by_month(orders, month = None, from_date = None, to_date = None):
     if month:
         orders = orders.filter(created__month = month)
     if from_date:
@@ -191,11 +195,29 @@ def number_order_by_month(month = None, from_date = None, to_date = None):
     for d in l:
         counter.update(d)
 
-    count_by_month = dict(counter).items()
-    return count_by_month
+    result = dict(counter).items()
+    return result
 
-def revenue_by_month(month = None, from_date = None, to_date = None):
-    orders = Order.objects.filter(billing_status = True)
+def number_order_by_day(orders, month = None, from_date = None, to_date = None):
+    if month:
+        orders = orders.filter(created__month = month)
+    if from_date:
+        orders = orders.filter(created__gte = from_date)
+    if to_date:
+        orders = orders.filter(created__lt = to_date)
+
+    count_by_day_data = orders.values('created__day').annotate(count=Count('id'))
+    l = []
+    for i in count_by_day_data:
+        l.append({i['created__day']:i['count']})
+    counter = Counter()
+    for d in l:
+        counter.update(d)
+
+    result = dict(counter).items()
+    return result
+
+def revenue_by_month(orders, month = None, from_date = None, to_date = None):
     if month:
         orders = orders.filter(created__month = month)
     if from_date:
@@ -213,14 +235,34 @@ def revenue_by_month(month = None, from_date = None, to_date = None):
     result = dict(counter).items()
     return result
 
+def revenue_by_day(orders, month = None, from_date = None, to_date = None):
+    if month:
+        orders = orders.filter(created__month = month)
+    if from_date:
+        orders = orders.filter(created__gte = from_date)
+    if to_date:
+        orders = orders.filter(created__lt = to_date)
+    # count_by_month = orders.raw("SELECT strftime('%m', created) as month, COUNT(*) as count, id FROM store_order WHERE billing_status = True GROUP BY strftime('%m', created)")
+    revenue_by_day_data = orders.values('created__day').annotate(revenue=Sum('total_paid'))
+    l = []
+    for i in revenue_by_day_data:
+        l.append({i['created__day']:i['revenue']})
+    counter = Counter()
+    for d in l:
+        counter.update(d)
+    result = dict(counter).items()
+    return result
+
 def stats_view(request):
     
-    month = request.GET.get('month')
-    from_date = request.GET.get('from_date')
-    to_date = request.GET.get('to_date')
-
-    count_by_month = number_order_by_month(month=month, from_date=from_date, to_date=to_date)
-    revenue_by_month_data = revenue_by_month(month=month, from_date=from_date, to_date=to_date)
-
-    return render(request, "account/chart-stats.html", {'count_by_month': count_by_month, 'revenue_by_month': revenue_by_month_data})
-
+    # month = request.GET.get('month')
+    # from_date = request.GET.get('from_date')
+    # to_date = request.GET.get('to_date')
+    # orders = Order.objects.filter(billing_status = True)
+    
+    # count_by_month = number_order_by_month(orders=orders, month=month, from_date=from_date, to_date=to_date)
+    # revenue_by_month_data = revenue_by_month(orders=orders, month=month, from_date=from_date, to_date=to_date)
+    # count_by_day = number_order_by_day(orders=orders, month=month, from_date=from_date, to_date=to_date)
+    # return render(request, "account/chart-stats.html", 
+    #               {'count_by_month': count_by_month, 'revenue_by_month': revenue_by_month_data, 'count_by_day': count_by_day})
+    pass
