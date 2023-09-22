@@ -116,22 +116,32 @@ div {
 
 
 .bbb_viewed {
-    padding-top: 51px;
-    padding-bottom: 60px;
-    background: #eff6fa
+    /* padding-top: 51px; */
+    
+    padding-bottom: 0px;
+    /* background: #eff6fa; */
+    border-radius: 2%;
+    background-color: #FF8E4D;
 }
 
 .bbb_main_container{
-        background-color: #fff;
-   padding: 11px;
+    /* background-color: #fff; */
+    background-color: #FF8E4D;
+
+   padding: 0px;
 }
 
 .bbb_viewed_title_container {
-    border-bottom: solid 1px #dadada
+    /* border-bottom: solid 1px #dadada; */
+    background-color: #FF8E4D;
+
 }
 
 .bbb_viewed_title {
-        margin-bottom: 16px;
+    color: #FFF;
+    font-size: 22px;
+    font-weight: 500;
+    /* margin-bottom: 16px; */
    margin-top: 8px;
 
 }
@@ -139,7 +149,7 @@ div {
 .bbb_viewed_nav_container {
     position: absolute;
     right: -5px;
-    bottom: 14px
+    bottom: -3px
 }
 
 .bbb_viewed_nav {
@@ -148,9 +158,9 @@ div {
 }
 
 .bbb_viewed_nav i {
-    color: #d63535;
+    color: #dadada;
     font-size: 18px;
-    padding: 5px;
+    padding: 15px;
     -webkit-transition: all 200ms ease;
     -moz-transition: all 200ms ease;
     -ms-transition: all 200ms ease;
@@ -167,15 +177,16 @@ div {
 }
 
 .bbb_viewed_slider_container {
-    padding-top: 13px;
+    padding-top: 5px;
 }
 
 .bbb_viewed_item {
     width: 100%;
     background: #FFFFFF;
-    border-radius: 2px;
-    padding-top: 25px;
-    padding-bottom: 25px;
+    height: 431px;
+    border-radius: 12px;
+    padding-top: 0px;
+    padding-bottom: 0px;
     padding-left: 30px;
     padding-right: 30px
 }
@@ -197,20 +208,19 @@ div {
 
 .bbb_viewed_price {
     font-size: 16px;
-    color: #000000;
-    font-weight: 500
+    font-weight: 700
 }
 
-.bbb_viewed_item.discount .bbb_viewed_price {
+/* .bbb_viewed_item.discount .bbb_viewed_price {
     color: #df3b3b
-}
+} */
 
 .bbb_viewed_price span {
     position: relative;
     font-size: 12px;
     font-weight: 400;
     color: rgba(0, 0, 0, 0.6);
-    margin-left: 8px
+    margin-left: 30px
 }
 
 .bbb_viewed_price span::after {
@@ -225,7 +235,8 @@ div {
 }
 
 .bbb_viewed_name {
-    margin-top: 3px
+    margin-top: 3px;
+    text-align: left;
 }
 
 .bbb_viewed_name a {
@@ -244,8 +255,8 @@ div {
 
 .item_marks {
     position: absolute;
-    top: 18px;
-    left: 18px
+    top: 5px;
+    left: -25px
 }
 
 .item_mark {
@@ -262,10 +273,11 @@ div {
 
 .item_discount { 
     background: #df3b3b;
-    margin-right: 5px
+    margin-right: 5px;
 }
 
 .item_new {
+
     background: #0e8ce4
 }
 
@@ -276,7 +288,3 @@ div {
 .bbb_viewed_item.is_new .item_new {
     display: inline-block
 }
-
-
-
-

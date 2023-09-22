@@ -104,13 +104,13 @@ body {
     color: #000000
 }
 
-div {
+/* div {
     display: block;
     position: relative;
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box
-}
+} */
 
 
 
@@ -131,7 +131,7 @@ div {
 }
 
 .bbb_viewed_title {
-        margin-bottom: 16px;
+    margin-bottom: 16px;
    margin-top: 8px;
 
 }
@@ -143,12 +143,15 @@ div {
 }
 
 .bbb_viewed_nav {
+    background-color: #326e51;
     display: inline-block;
     cursor: pointer
 }
 
-.bbb_viewed_nav i {
-    color: #d63535;
+.bbb_viewed_nav img {
+
+
+    /* color: #326e51; */
     font-size: 18px;
     padding: 5px;
     -webkit-transition: all 200ms ease;

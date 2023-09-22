@@ -9,8 +9,9 @@ from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_text
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, Count, DateField
+from datetime import datetime
 from .tokens import activation_token
-from .models import User, Order
+from .models import User, Order, OrderItem
 from django.http import HttpResponse
 from django.db.models import Q
 from django.db.models.functions import Cast
@@ -32,7 +33,20 @@ def product_all(request):
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
 
-    return render(request, 'store/home.html', {'products': products, 'page_obj': page_obj})
+    order_items = OrderItem.objects.values('product').annotate(sum_quantity = Sum('quantity')).order_by('-sum_quantity')
+
+    # lọc product theo cách này thì được nhưng nó không còn theo thứ tự sum_quantity nữa
+    #  mà nó tự sắp xếp theo thứ tự id product
+    # p = products.filter(id__in=orderitem.values('product'))[:8]
+
+    # Nên phải lấy từng id product trong top_8_product và query lại thông tin từng product rồi append vào list l
+    best_selling_products = []
+    for i in order_items.values('product'):
+        id = i['product']
+        prod = Product.objects.filter(id = id)
+        best_selling_products.append(prod)
+
+    return render(request, 'store/home.html', {'products': products, 'page_obj': page_obj, 'best_selling_products': best_selling_products})
 
 def product_detail(request, slug):
     product = get_object_or_404(Product, slug = slug, in_stock = True)
@@ -41,12 +55,33 @@ def product_detail(request, slug):
 def category_list(request, category_slug):
     category = get_object_or_404(Category, slug = category_slug)
     products = Product.products.filter(category = category)
+    from_price = request.GET.get('from_price')
+    to_price = request.GET.get('to_price')
+    sorting = request.GET.get('sorting')
+    
+    if from_price:
+        products = products.filter(price__gte=from_price)
+    if to_price:
+        products = products.filter(price__lt=to_price)
+    if sorting == 'asc':
+        products = products.order_by('price')
+    if sorting == 'desc':
+        products = products.order_by('-price')
+    if sorting == 'latest':
+        products = products.order_by('created')
+
     return render(request, 'products/category.html', {'category': category, 'products': products})
 
 def search(request):
-    q=request.GET['q']
+    q=request.GET.get('q')
+    sorting = request.GET.get('sorting')
     data=Product.objects.filter(Q(title__icontains = q) | Q(category__title__icontains = q)).order_by('-id')
-
+    if sorting == 'asc':
+        data = data.order_by('price')
+    if sorting == 'desc':
+        data = data.order_by('-price')
+    if sorting == 'latest':
+        data = data.order_by('created')
     return render(request,'products/search.html',{'data':data})
 
 # def user_register(request):
@@ -179,7 +214,7 @@ def user_orders(request):
     orders = Order.objects.filter(user_id=user_id).filter(billing_status=True)
     return orders
 
-def number_order_by_month(orders, month = None, from_date = None, to_date = None):
+def number_order_by_month(orders, month = None, year = None, from_date = None, to_date = None):
     if month:
         orders = orders.filter(created__month = month)
     if from_date:
@@ -198,14 +233,13 @@ def number_order_by_month(orders, month = None, from_date = None, to_date = None
     result = dict(counter).items()
     return result
 
-def number_order_by_day(orders, month = None, from_date = None, to_date = None):
+def number_order_by_day(orders, month = None, year = None, from_date = None, to_date = None):
     if month:
         orders = orders.filter(created__month = month)
     if from_date:
         orders = orders.filter(created__gte = from_date)
     if to_date:
         orders = orders.filter(created__lt = to_date)
-
     count_by_day_data = orders.values('created__day').annotate(count=Count('id'))
     l = []
     for i in count_by_day_data:
@@ -217,7 +251,7 @@ def number_order_by_day(orders, month = None, from_date = None, to_date = None):
     result = dict(counter).items()
     return result
 
-def revenue_by_month(orders, month = None, from_date = None, to_date = None):
+def revenue_by_month(orders, month = None, year = None, from_date = None, to_date = None):
     if month:
         orders = orders.filter(created__month = month)
     if from_date:
@@ -235,7 +269,7 @@ def revenue_by_month(orders, month = None, from_date = None, to_date = None):
     result = dict(counter).items()
     return result
 
-def revenue_by_day(orders, month = None, from_date = None, to_date = None):
+def revenue_by_day(orders, month = None, year = None, from_date = None, to_date = None):
     if month:
         orders = orders.filter(created__month = month)
     if from_date:
@@ -253,16 +287,3 @@ def revenue_by_day(orders, month = None, from_date = None, to_date = None):
     result = dict(counter).items()
     return result
 
-def stats_view(request):
-    
-    # month = request.GET.get('month')
-    # from_date = request.GET.get('from_date')
-    # to_date = request.GET.get('to_date')
-    # orders = Order.objects.filter(billing_status = True)
-    
-    # count_by_month = number_order_by_month(orders=orders, month=month, from_date=from_date, to_date=to_date)
-    # revenue_by_month_data = revenue_by_month(orders=orders, month=month, from_date=from_date, to_date=to_date)
-    # count_by_day = number_order_by_day(orders=orders, month=month, from_date=from_date, to_date=to_date)
-    # return render(request, "account/chart-stats.html", 
-    #               {'count_by_month': count_by_month, 'revenue_by_month': revenue_by_month_data, 'count_by_day': count_by_day})
-    pass

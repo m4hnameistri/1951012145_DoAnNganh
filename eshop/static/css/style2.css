@@ -143,12 +143,13 @@ div {
 }
 
 .bbb_viewed_nav {
+    background-color: #326e51;
     display: inline-block;
     cursor: pointer
 }
 
 .bbb_viewed_nav i {
-    color: #d63535;
+    color: #dadada;
     font-size: 18px;
     padding: 5px;
     -webkit-transition: all 200ms ease;

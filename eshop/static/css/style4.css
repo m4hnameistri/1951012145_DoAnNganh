@@ -148,7 +148,7 @@ div {
 }
 
 .bbb_viewed_nav i {
-    color: #d63535;
+    color: #dadada;
     font-size: 18px;
     padding: 5px;
     -webkit-transition: all 200ms ease;
@@ -197,13 +197,12 @@ div {
 
 .bbb_viewed_price {
     font-size: 16px;
-    color: #000000;
     font-weight: 500
 }
 
-.bbb_viewed_item.discount .bbb_viewed_price {
+/* .bbb_viewed_item.discount .bbb_viewed_price {
     color: #df3b3b
-}
+} */
 
 .bbb_viewed_price span {
     position: relative;
@@ -262,7 +261,7 @@ div {
 
 .item_discount { 
     background: #df3b3b;
-    margin-right: 5px
+    margin-right: 5px;
 }
 
 .item_new {
@@ -276,7 +275,3 @@ div {
 .bbb_viewed_item.is_new .item_new {
     display: inline-block
 }
-
-
-
-

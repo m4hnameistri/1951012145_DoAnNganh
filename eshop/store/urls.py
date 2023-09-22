@@ -28,6 +28,5 @@ urlpatterns = [
     path('account/password_reset_complete/', TemplateView.as_view(template_name="account/reset_status.html"), name='password_reset_complete'),
     path('account/profile/', views.profile, name = 'profile'),
     path('account/edit_info/', views.edit_info, name = 'edit_info'),
-    path('search',views.search,name='search'),
-    path('owner/stats/', views.stats_view, name='stats'),
+    path('search/',views.search,name='search'),
 ]

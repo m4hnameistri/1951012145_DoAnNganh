@@ -49,7 +49,7 @@
             </select> {% endcomment %}
             <div class="dieuchinh">
               <span class="minus">-</span>
-              <span id="product_qty" class="num">0{{item.soluong}}</span>
+              <span id="product_qty{{product.id}}" class="num">{{item.soluong}}</span>
               <span class="plus">+</span>
             </div>
           </td>
@@ -118,7 +118,7 @@
         data: {
           productid: $(this).data('index'),
           {% comment %} productqty: $('#select' + prodid + ' option:selected').text(), {% endcomment %}
-          productqty: document.getElementById("product_qty").innerText,
+          productqty: document.getElementById("product_qty" + prodid).innerText,
           csrfmiddlewaretoken: "{{csrf_token}}",
           action: 'post'
         },
@@ -135,23 +135,37 @@
     }) 
   </script> 
   <script>
-    const plus = document.querySelector(".plus"),
-     minus = document.querySelector(".minus"),
-     num = document.querySelector(".num");
-     let a = document.getElementById("product_qty").innerText;
-     plus.addEventListener("click", ()=>{
-       a++;
-       a = (a < 10) ? "0" + a : a;
-       num.innerText = a;
-     });
- 
-     minus.addEventListener("click", ()=>{
-       if(a > 1){
-         a--;
-         a = (a < 10) ? "0" + a : a;
-         num.innerText = a;
-       }
-     });
- 
+    plus = document.querySelectorAll(".plus"),
+    minus = document.querySelectorAll(".minus"),
+    {% comment %} num = document.querySelectorAll(".num"); {% endcomment %}
+    {% comment %} let a = document.getElementById("product_qty").innerText; {% endcomment %}
+    {% comment %} plus.forEach(p => {
+      p.addEventListener("click", ()=>{
+        a++;
+        a = (a < 10) ? "0" + a : a;
+        num.innerText = a;
+      });
+    }) {% endcomment %}
+    plus.forEach(p => {
+      p.addEventListener("click", function(event){
+        buttonClicked = event.target;
+        quantity = buttonClicked.parentElement.children[1];
+        new_quantity = parseInt(quantity.innerText) + 1;
+        quantity.innerText = (new_quantity < 10) ? "0" + new_quantity : new_quantity;
+      });
+    })
+    minus.forEach(m => {
+      m.addEventListener("click", function(event){
+        buttonClicked = event.target;
+        quantity = buttonClicked.parentElement.children[1];
+        new_quantity = parseInt(quantity.innerText) - 1;
+        if (new_quantity > 0) {
+          quantity.innerText = (new_quantity < 10) ? "0" + new_quantity : new_quantity;
+        }
+        else
+          quantity.innerText = 0;
+      });
+    })
+    
    </script>
 {% endblock %}
