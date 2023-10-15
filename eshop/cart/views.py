@@ -1,11 +1,15 @@
 from urllib import response
 from django.shortcuts import get_object_or_404, render
 from .cart import Cart
+from django.contrib import messages
 from django.http import JsonResponse
 from store.models import Product
 # Create your views here.
 def cart_summary(request):
     cart = Cart(request)
+    print(cart.__len__())
+    if (cart.__len__() == 0):
+        messages.error(request, "Không có sản phẩm nào trong giỏ để đặt")
     return render(request, 'cart/summary.html', {'cart': cart})
 
 def cart_add(request):

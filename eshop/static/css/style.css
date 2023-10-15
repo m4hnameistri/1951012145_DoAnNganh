@@ -57,7 +57,7 @@ button#search_button {
 }
 
 .dieuchinh{
-    height: 120px !important;
+    height: 20px ;
     min-width: 12-px; 
     display: flex;
     align-items: center;
@@ -80,6 +80,8 @@ button#search_button {
     border-left: 2px solid rgba(0,0,0,0.2);
     pointer-events: none;
 }
+
+
 
 
 

@@ -3,7 +3,9 @@ from . import views
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 
-from .forms import (UserLoginForm, ResetPasswordForm, ResetConfirmForm)
+from .forms import UserLoginForm
+# from .forms import ResetPasswordForm, ResetConfirmForm
+
 
 app_name = 'store'
 urlpatterns = [
@@ -17,17 +19,20 @@ urlpatterns = [
     form_class = UserLoginForm), name = 'login'),
     path('account/logout/', auth_views.LogoutView.as_view(next_page='store:login'),
     name = 'logout'),
-    path('account/password_reset/', auth_views.PasswordResetView.as_view(template_name='account/password_reset_form.html',
-                                                                        success_url = 'password_reset_email_confirm',
-                                                                        email_template_name = 'account/password_reset_email.html',
-                                                                        form_class = ResetPasswordForm), name = 'password_reset'),
-    path('account/password_reset/password_reset_email_confirm/', TemplateView.as_view(template_name = 'account/reset_status.html'), name = 'password_reset_done'),
-    path('account/password_reset_confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name= 'account/password_reset_confirm.html',
-                                                                                                        success_url = '/account/password_reset_complete',
-                                                                                                        form_class = ResetConfirmForm), name = 'password_reset_confirm'),
-    path('account/password_reset_complete/', TemplateView.as_view(template_name="account/reset_status.html"), name='password_reset_complete'),
+    # path('account/password_reset/', auth_views.PasswordResetView.as_view(template_name='account/password_reset_form.html',
+    #                                                                     success_url = 'password_reset_email_confirm',
+    #                                                                     email_template_name = 'account/password_reset_email.html',
+    #                                                                     form_class = ResetPasswordForm), name = 'password_reset'),
+    # path('account/password_reset/password_reset_email_confirm/', TemplateView.as_view(template_name = 'account/reset_status.html'), name = 'password_reset_done'),
+    # path('account/password_reset_confirm/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name= 'account/password_reset_confirm.html',
+    #                                                                                                     success_url = '/account/password_reset_complete',
+    #                                                                                                     form_class = ResetConfirmForm), name = 'password_reset_confirm'),
+    # path('account/password_reset_complete/', TemplateView.as_view(template_name="account/reset_status.html"), name='password_reset_complete'),
     path('account/profile/', views.profile, name = 'profile'),
     path('account/edit_info/', views.edit_info, name = 'edit_info'),
-    path('search',views.search,name='search'),
+    path('account/password_change/', views.password_change , name = 'password_change'),
+    path('account/password_reset/', views.reset_password, name = 'password_reset'),
+    path('account/password_reset_confirm/<slug:uidb64>/<slug:token>/', views.password_reset_confirm, name='password_reset_confirm'),
 
+    path('search/',views.search,name='search'),
 ]

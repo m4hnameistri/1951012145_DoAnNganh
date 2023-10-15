@@ -1,6 +1,12 @@
+from collections.abc import Mapping
 import email
+from typing import Any
 from django import forms
-from .models import User
+from django.contrib.auth.base_user import AbstractBaseUser
+from django.core.files.base import File
+from django.db.models.base import Model
+from django.forms.utils import ErrorList
+from .models import User, Order
 from django.contrib.auth.forms import AuthenticationForm, PasswordResetForm, SetPasswordForm
 
 class CreateUserForm(forms.ModelForm):
@@ -13,8 +19,8 @@ class CreateUserForm(forms.ModelForm):
         model = User
         fields = ('username', 'email',)
 
-    def clean_user_name(self):
-        user_name = self.cleaned_data['user_name'].lower()
+    def clean_username(self):
+        user_name = self.cleaned_data['username'].lower()
         obj = User.objects.filter(username = user_name)
         if obj.count():
             raise forms.ValidationError('Tên tài khoản này đã có người sử dụng!')
@@ -40,16 +46,42 @@ class CreateUserForm(forms.ModelForm):
         self.fields['email'].widget.attrs.update(
             {'class': 'form-control mb-3', 'placeholder': 'tri@gmail.com', 'name': 'email', 'id': 'id_email'})
         self.fields['password'].widget.attrs.update(
-            {'class': 'form-control mb-3', 'placeholder': ''})
+            {'class': 'form-control mb-3', 'placeholder': 'Nhập mật khẩu'})
         self.fields['password2'].widget.attrs.update(
             {'class': 'form-control', 'placeholder': 'Nhập lại mật khẩu'})
 
 
 class UserLoginForm(AuthenticationForm):
     username = forms.CharField(required=False,widget=forms.TextInput(
-        attrs={'class': 'form-control mb-3', 'placeholder': 'username', 'id': 'login-user'}))
+        attrs={'class': 'form-control mb-3', 'placeholder': 'tri@ou.edu.vn', 'id': 'login-user'}))
     password = forms.CharField(widget=forms.PasswordInput(
-        attrs={'class':'form-control mb-3', 'placeholder': 'Password', 'id':'login-password'}))
+        attrs={'class':'form-control mb-3', 'placeholder': '********', 'id':'login-password'}))
+    
+    def __init__(self, request: Any = ..., *args: Any, **kwargs: Any) -> None:
+        super().__init__(request, *args, **kwargs)
+        self.fields['username'].label = 'Email'
+        self.fields['password'].label = 'Mật khẩu'
+
+class CheckoutForm(forms.ModelForm):
+    full_name = forms.CharField(
+        label='Họ và tên', min_length=2, max_length=50, widget=forms.TextInput(
+            attrs={'class': 'form-control mb-3', 'placeholder': 'Họ và tên', 'id': 'form-fullname'}))
+    phone_number = forms.CharField(
+        label='Số điện thoại', min_length=10, max_length=11, widget=forms.TextInput(
+            attrs={'class': 'form-control mb-3', 'placeholder': 'Số điện thoại', 'id': 'form-phone'}))
+    address_1 = forms.CharField(
+        label='Địa chỉ:', min_length=5, max_length=255, widget=forms.TextInput(
+            attrs={'class': 'form-control mb-3', 'placeholder': 'Địa chỉ nhận', 'id': 'form-address'}))
+    
+    class Meta:
+        model = Order
+        fields = ('full_name', 'phone', 'address1')
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['full_name'].required = True
+        self.fields['phone'].required = False
+        self.fields['address1'].required = False
 
 class EditInfoForm(forms.ModelForm):
     email = forms.EmailField(
@@ -72,7 +104,10 @@ class EditInfoForm(forms.ModelForm):
     address_1 = forms.CharField(
         label='Địa chỉ:', min_length=10, max_length=255, widget=forms.TextInput(
             attrs={'class': 'form-control mb-3', 'placeholder': 'Địa chỉ của bạn', 'id': 'form-address'}))
-
+    address_2 = forms.CharField(
+        label='Địa chỉ 2:', min_length=10, max_length=255, widget=forms.TextInput(
+            attrs={'class': 'form-control mb-3', 'placeholder': 'Địa chỉ của bạn', 'id': 'form-address'}))
+    
     class Meta:
         model = User
         fields = ('email', 'last_name', 'first_name', 'phone_number', 'address_1')
@@ -84,23 +119,39 @@ class EditInfoForm(forms.ModelForm):
         self.fields['email'].required = True
         self.fields['phone_number'].required = False
         self.fields['address_1'].required = False
+        self.fields['address_2'].required = False
 
     
+# class ResetPasswordForm(PasswordResetForm):
+#     email = forms.EmailField(max_length=100, help_text = "Required", widget=forms.TextInput(
+#         attrs={'class':'form-control mb-3', 'placeholder': 'tri@ou.edu.vn', 'id': 'form-email'}))
+    
+#     def clean_email(self):
+#         email = self.cleaned_data['email']
+#         obj = User.objects.filter(email = email)
+#         if not obj:
+#             raise forms.ValidationError(' Không thể tìm thấy tài khoản này!!!')
+#         return email
+
+# class ResetConfirmForm(SetPasswordForm):
+#     new_password1 = forms.CharField(
+#         label='New password', widget=forms.PasswordInput(
+#             attrs={'class': 'form-control mb-3', 'placeholder': 'New Password', 'id': 'form-newpass'}))
+#     new_password2 = forms.CharField(
+#         label='Repeat password', widget=forms.PasswordInput(
+#             attrs={'class': 'form-control mb-3', 'placeholder': 'New Password', 'id': 'form-new-pass2'}))
+
+class PasswordChangeForm(SetPasswordForm):
+    
+    class Meta:
+        model = User
+        fields = ('new_password1', 'new_password2')
+
+    def __init__(self, user: AbstractBaseUser | None, *args: Any, **kwargs: Any) -> None:
+        super().__init__(user, *args, **kwargs)
+        self.fields['new_password1'].label = 'Nhập mật khẩu mới'
+        self.fields['new_password2'].label = 'Nhập lại mật khẩu'
+
 class ResetPasswordForm(PasswordResetForm):
-    email = forms.EmailField(max_length=100, help_text = "Required", widget=forms.TextInput(
-        attrs={'class':'form-control mb-3', 'placeholder': 'tri@ou.edu.vn', 'id': 'form-email'}))
-    
-    def clean_email(self):
-        email = self.cleaned_data['email']
-        obj = User.objects.filter(email = email)
-        if not obj:
-            raise forms.ValidationError(' Không thể tìm thấy tài khoản này!!!')
-        return email
-
-class ResetConfirmForm(SetPasswordForm):
-    new_password1 = forms.CharField(
-        label='New password', widget=forms.PasswordInput(
-            attrs={'class': 'form-control mb-3', 'placeholder': 'New Password', 'id': 'form-newpass'}))
-    new_password2 = forms.CharField(
-        label='Repeat password', widget=forms.PasswordInput(
-            attrs={'class': 'form-control mb-3', 'placeholder': 'New Password', 'id': 'form-new-pass2'}))
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

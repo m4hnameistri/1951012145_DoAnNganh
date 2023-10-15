@@ -30,22 +30,21 @@
 
                                 {% csrf_token %}
                                 <h3 class="mb-4">Đăng Nhập</h3>
-{% comment %} 
-                                {% if form.errors %}
-                                <div class="alert alert-primary" role="alert">
-                                    Error: Username or Password not correct!
-                                </div>
-                                {% endif %} {% endcomment %}
-                                
-                                {% if form.errors %}
-                                <p>Please correct the following errors:</p>
-                                {% for field in form %}
-                                {% if field.errors %}
-                                <div class="alert alert-primary" role="alert">
-                                    {{ field.label }}: {{ field.errors|striptags }}
-                                </div>
+                                {% if messages %}
+                                    {% for message in messages %}
+                                    <div class="alert alert-primary {{ message.tags }}" role="alert">
+                                        {{message}}
+                                    </div>
+                                    {% endfor %}
                                 {% endif %}
-                                {% endfor %}
+                                {% if form.errors %}
+                                    {% for field in form %}
+                                        {% if field.errors %}
+                                        <div class="alert alert-primary" role="alert">
+                                            {{ field.label }}: {{ field.errors|striptags }}
+                                        </div>
+                                        {% endif %}
+                                    {% endfor %}
                                 {% endif %}
 
                                 <label class="form-label">{{ form.username.label}}</label>
@@ -53,9 +52,13 @@
 
                                 <label class="form-label">{{ form.password.label}}</label>
                                 {{ form.password}}
+                                
+                                <p class="">
+                                    <a href="{% url "store:password_reset" %}">Quên mật khẩu?</a>
+                                </p>
                                 <div class="d-grid gap-2">
                                     <input type="hidden" name="next" value="{{ next }}">
-                                    <button class="btn btn-primary py-2 mb-4 mt-5 fw-bold" type="submit" value="Log-in">Đăng nhập
+                                    <button class="btn btn-primary py-2 mb-4 mt-4 fw-bold" type="submit" value="Log-in">Đăng nhập
                                     </button>
                                 </div>
                                 <p class="text-center pb-3">
