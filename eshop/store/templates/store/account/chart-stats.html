@@ -8,7 +8,8 @@
 <div class="row mb-5">
     <form class='form-inline'>
         <div class="form-group">
-            <input type="number" min="1" max="12" placeholder="Nhập tháng..." name="month" class="form-control mx-3" />
+            <label class="mx-2">Nhập tháng</label>
+            <input type="number" min="1" max="12" placeholder="" name="month" class="form-control" />
         </div>
         <div class="form-group">
             <label class="mx-2">Từ ngày</label>
@@ -133,11 +134,10 @@ window.onload = function() {
     const ctx4 = document.getElementById('myChart4').getContext('2d');
 
     loadChart(ctx, 'bar', labels1, data1, 'Doanh thu theo tháng', 'Tháng', 'Doanh thu', colors, borderColors);
-    loadChart(ctx2, 'bar', labels2, data2,'Số đơn hàng mỗi tháng', 'Tháng', 'Số đơn', colors, borderColors);
-    loadChart(ctx3, 'line', labels3, data3,'Doanh thu từng ngày', 'Ngày', 'Doanh thu', colors2, borderColors2);
-    loadChart(ctx4, 'bar', labels4, data4, 'Số đơn mỗi ngày', 'Ngày', 'Số đơn', colors2, borderColors2);
+    loadChart(ctx2, 'bar', labels2, data2,'Số đơn hàng theo tháng', 'Tháng', 'Số đơn', colors, borderColors);
+    loadChart(ctx3, 'line', labels3, data3,'Doanh thu theo ngày', 'Ngày', 'Doanh thu', colors2, borderColors2);
+    loadChart(ctx4, 'line', labels4, data4, 'Số đơn theo ngày', 'Ngày', 'Số đơn', colors2, borderColors2);
 
-    
 }
 </script>
 

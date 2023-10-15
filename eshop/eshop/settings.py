@@ -49,7 +49,11 @@ INSTALLED_APPS = [
     'checkout.apps.CheckoutConfig',
     'paypal.standard.ipn',
     'mathfilters',
+    'crispy_forms',
+    'crispy_bootstrap4',
 ]
+CRISPY_TEMPLATE_PACK = 'bootstrap4'
+
 
 JAZZMIN_SETTINGS = {
     "topmenu_links": [
@@ -58,7 +62,7 @@ JAZZMIN_SETTINGS = {
         {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
 
         # external url that opens in a new window (Permissions can be added)
-        {"name": "Chart", "url": "chart/"},
+        {"name": "Thống kê", "url": "chart/"},
 
         # model admin to link to (Permissions checked against model)
         {"model": "auth.User"},
@@ -67,6 +71,9 @@ JAZZMIN_SETTINGS = {
         {"app": "books"},
     ],
 }
+
+
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -166,7 +173,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-LOGIN_REDIRECT_URL = '/account/dashboard'
+LOGIN_REDIRECT_URL = '/'
 # LOGOUT_REDIRECT_URL = 'store:login'
 LOGIN_URL = '/account/login'
 

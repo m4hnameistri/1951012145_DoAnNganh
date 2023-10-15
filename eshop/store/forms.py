@@ -2,6 +2,7 @@ from collections.abc import Mapping
 import email
 from typing import Any
 from django import forms
+from django.contrib.auth.base_user import AbstractBaseUser
 from django.core.files.base import File
 from django.db.models.base import Model
 from django.forms.utils import ErrorList
@@ -18,8 +19,8 @@ class CreateUserForm(forms.ModelForm):
         model = User
         fields = ('username', 'email',)
 
-    def clean_user_name(self):
-        user_name = self.cleaned_data['user_name'].lower()
+    def clean_username(self):
+        user_name = self.cleaned_data['username'].lower()
         obj = User.objects.filter(username = user_name)
         if obj.count():
             raise forms.ValidationError('Tên tài khoản này đã có người sử dụng!')
@@ -45,16 +46,21 @@ class CreateUserForm(forms.ModelForm):
         self.fields['email'].widget.attrs.update(
             {'class': 'form-control mb-3', 'placeholder': 'tri@gmail.com', 'name': 'email', 'id': 'id_email'})
         self.fields['password'].widget.attrs.update(
-            {'class': 'form-control mb-3', 'placeholder': ''})
+            {'class': 'form-control mb-3', 'placeholder': 'Nhập mật khẩu'})
         self.fields['password2'].widget.attrs.update(
             {'class': 'form-control', 'placeholder': 'Nhập lại mật khẩu'})
 
 
 class UserLoginForm(AuthenticationForm):
     username = forms.CharField(required=False,widget=forms.TextInput(
-        attrs={'class': 'form-control mb-3', 'placeholder': 'username', 'id': 'login-user'}))
+        attrs={'class': 'form-control mb-3', 'placeholder': 'tri@ou.edu.vn', 'id': 'login-user'}))
     password = forms.CharField(widget=forms.PasswordInput(
-        attrs={'class':'form-control mb-3', 'placeholder': 'Password', 'id':'login-password'}))
+        attrs={'class':'form-control mb-3', 'placeholder': '********', 'id':'login-password'}))
+    
+    def __init__(self, request: Any = ..., *args: Any, **kwargs: Any) -> None:
+        super().__init__(request, *args, **kwargs)
+        self.fields['username'].label = 'Email'
+        self.fields['password'].label = 'Mật khẩu'
 
 class CheckoutForm(forms.ModelForm):
     full_name = forms.CharField(
@@ -116,21 +122,36 @@ class EditInfoForm(forms.ModelForm):
         self.fields['address_2'].required = False
 
     
-class ResetPasswordForm(PasswordResetForm):
-    email = forms.EmailField(max_length=100, help_text = "Required", widget=forms.TextInput(
-        attrs={'class':'form-control mb-3', 'placeholder': 'tri@ou.edu.vn', 'id': 'form-email'}))
+# class ResetPasswordForm(PasswordResetForm):
+#     email = forms.EmailField(max_length=100, help_text = "Required", widget=forms.TextInput(
+#         attrs={'class':'form-control mb-3', 'placeholder': 'tri@ou.edu.vn', 'id': 'form-email'}))
     
-    def clean_email(self):
-        email = self.cleaned_data['email']
-        obj = User.objects.filter(email = email)
-        if not obj:
-            raise forms.ValidationError(' Không thể tìm thấy tài khoản này!!!')
-        return email
+#     def clean_email(self):
+#         email = self.cleaned_data['email']
+#         obj = User.objects.filter(email = email)
+#         if not obj:
+#             raise forms.ValidationError(' Không thể tìm thấy tài khoản này!!!')
+#         return email
 
-class ResetConfirmForm(SetPasswordForm):
-    new_password1 = forms.CharField(
-        label='New password', widget=forms.PasswordInput(
-            attrs={'class': 'form-control mb-3', 'placeholder': 'New Password', 'id': 'form-newpass'}))
-    new_password2 = forms.CharField(
-        label='Repeat password', widget=forms.PasswordInput(
-            attrs={'class': 'form-control mb-3', 'placeholder': 'New Password', 'id': 'form-new-pass2'}))
+# class ResetConfirmForm(SetPasswordForm):
+#     new_password1 = forms.CharField(
+#         label='New password', widget=forms.PasswordInput(
+#             attrs={'class': 'form-control mb-3', 'placeholder': 'New Password', 'id': 'form-newpass'}))
+#     new_password2 = forms.CharField(
+#         label='Repeat password', widget=forms.PasswordInput(
+#             attrs={'class': 'form-control mb-3', 'placeholder': 'New Password', 'id': 'form-new-pass2'}))
+
+class PasswordChangeForm(SetPasswordForm):
+    
+    class Meta:
+        model = User
+        fields = ('new_password1', 'new_password2')
+
+    def __init__(self, user: AbstractBaseUser | None, *args: Any, **kwargs: Any) -> None:
+        super().__init__(user, *args, **kwargs)
+        self.fields['new_password1'].label = 'Nhập mật khẩu mới'
+        self.fields['new_password2'].label = 'Nhập lại mật khẩu'
+
+class ResetPasswordForm(PasswordResetForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)

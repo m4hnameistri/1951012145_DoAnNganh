@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls.resolvers import URLResolver
-from .models import Category, Product, User, Order, OrderItem
+from .models import Category, Product, User, Order, OrderItem, Stock
 from django.urls import path
 from datetime import datetime
 from django.template.response import TemplateResponse
@@ -23,6 +23,12 @@ class CustomAdminSite(admin.AdminSite):
         from_date = request.GET.get('from_date')
         to_date = request.GET.get('to_date')
         orders = Order.objects.filter(billing_status = True)
+        # if Stock.objects.filter(product = 10).only('stock_quantity') == 3:
+        #     print('yes')
+        # else:
+        #     print('no')
+        r = Stock.objects.filter(product = 10).first()
+        print(type(r))
         count_by_month = number_order_by_month(orders=orders,month=month, year=year, from_date=from_date, to_date=to_date)
         revenue_by_month_data = revenue_by_month(orders=orders ,month=month, year=year, from_date=from_date, to_date=to_date)
         count_by_day = number_order_by_day(orders=orders ,month=month, year=year, from_date=from_date, to_date=to_date)
@@ -41,7 +47,7 @@ class OrderItemAdmin(admin.ModelAdmin):
     list_display = ('id','order','product','price', 'quantity')
 
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('title', 'category', 'price', 'in_stock', 'is_active')
+    list_display = ('id','title', 'category', 'price', 'in_stock', 'is_active')
     list_editable = ('is_active',)
 
 
@@ -50,3 +56,5 @@ custom_admin_site.register(Product, ProductAdmin)
 custom_admin_site.register(User)
 custom_admin_site.register(Order, OrderAdmin)
 custom_admin_site.register(OrderItem, OrderItemAdmin)
+custom_admin_site.register(Stock)
+

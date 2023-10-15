@@ -20,6 +20,13 @@
     <div class="row">
       <div class="col-md-9">
         <h3 class="my-4 border-bottom pb-1">Giỏ hàng của bạn</h3>
+        {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-primary {{ message.tags }}" role="alert">
+            {{message}}
+        </div>
+        {% endfor %}
+        {% endif %}
         <table class="table table-bordered">
       <thead>
         <tr bgcolor="grey" border="2">
@@ -77,7 +84,7 @@
               <hr />
               <div class="pt-2">Tổng cộng: <div id="total" class="d-inline-flex fw-bold h5 total">{{cart.total_cart_price|intcomma}}</div><span class="fw-bold"> đ</span></div>
               <div class="d-grid gap-2 mt-2">
-                <a role="button" href="{% url 'checkout:paypal_checkout' %}" class="btn btn-success fw-bold" type="button">Tiến hành đặt hàng</a>
+                <a role="button" href="{% url 'checkout:paypal_checkout' %}" id="order_button" class="btn btn-success fw-bold order_button" type="button">Tiến hành đặt hàng</a>
               </div>
             </div>
           </div>
@@ -103,6 +110,10 @@
           document.getElementById("cart_qty").innerHTML = json.cartqty
           document.getElementById("subtotal").innerHTML = parseFloat(json.totalcartprice).toLocaleString()
           document.getElementById("total").innerHTML = parseFloat(json.totalcartprice).toLocaleString()
+          if (json.cartqty == 0){
+            console.log("hehehe")
+            document.getElementById("order_button").setAttribute("href","");
+          }
         },
         error: function (xhr, errmsg, err) {}
       });
@@ -127,12 +138,17 @@
           document.getElementById("subtotal").innerHTML = parseFloat(json.totalcartprice).toLocaleString()
           document.getElementById("item-total" + prodid).innerHTML  = parseFloat(json.itemtotal).toLocaleString()
           document.getElementById("total").innerHTML = parseFloat(json.totalcartprice).toLocaleString()
-
-
+          if (json.cartqty == 0){
+            document.getElementById("order_button").setAttribute("href","");
+          }
         },
         error: function (xhr, errmsg, err) {}
       });
     }) 
+    if (cart.len == 0){
+      console.log("hehehe")
+      document.getElementById("order_button").setAttribute("href","");
+    }
   </script> 
   <script>
     plus = document.querySelectorAll(".plus"),
@@ -166,6 +182,12 @@
           quantity.innerText = 0;
       });
     })
+
+  {% comment %} var cart_len = JSON.parse("{{cart|escapejs}}"); {% endcomment %}
+    {% if cart|length == 0 %}
+      document.getElementById("order_button").setAttribute("href","#");
+    {% endif %}
+
     
    </script>
 {% endblock %}

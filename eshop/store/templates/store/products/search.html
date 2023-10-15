@@ -10,40 +10,48 @@
         <h2 class = "list-product-title">Danh sách sản phẩm</h2>
         <div class="list-product-description pb-3">
           <p>Kết quả tìm kiếm của "{{request.GET.q}}"</p>
+          {% if not data %}
+          {% if messages %}
+            {% for message in messages %}
+            <p>{{message}}</p>
+            {% endfor %}
+          {% endif %}
+          {% endif %}
         </div>
     </div>
+    {% if data %}
     <div class="row container">
-        <div class="col-9">   
-        </div>
-        {% comment %} <div class="">
-        </div> {% endcomment %}
-        <form class="d-inline-flex col-3">
-          <label class="mt-2 mx-2">Sắp xếp theo</label>
-          <div class="dropdown">
-            <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-              Mặc định
-            </button>
-            <input type="hidden" name="q" value="{{request.GET.q}}">
-
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-              <li>
-                <input type="submit" value="asc" name="sorting" class="btn-check" id="price_asc" autocomplete="off">
-                <label class="btn" for="price_asc">Giá thấp đến cao</label>
-              </li>
-              <li>
-                <input type="submit" value="desc" name="sorting" class="btn-check" id="price_desc" autocomplete="off">
-                <label class="btn" for="price_desc">Giá cao đến thấp</label>
-              </li>
-              <li>  
-                <input type="submit" value="latest" name="sorting" class="btn-check" id="latest" autocomplete="off">
-                <label class="btn" for="latest">Mới nhất</label>
-              </li>
-            </ul>
-          </div>
-        </form>
+      <div class="col-9">   
       </div>
+      <form class="d-inline-flex col-3">
+        <label class="mt-2 mx-2">Sắp xếp theo</label>
+        <div class="dropdown">
+          <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
+            Mặc định
+          </button>
+          <input type="hidden" name="q" value="{{request.GET.q}}">
+
+          <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <li>
+              <input type="submit" value="asc" name="sorting" class="btn-check" id="price_asc" autocomplete="off">
+              <label class="btn" for="price_asc">Giá thấp đến cao</label>
+            </li>
+            <li>
+              <input type="submit" value="desc" name="sorting" class="btn-check" id="price_desc" autocomplete="off">
+              <label class="btn" for="price_desc">Giá cao đến thấp</label>
+            </li>
+            <li>  
+              <input type="submit" value="latest" name="sorting" class="btn-check" id="latest" autocomplete="off">
+              <label class="btn" for="latest">Mới nhất</label>
+            </li>
+          </ul>
+        </div>
+      </form>
+    </div>
 
     <hr>
+    {% endif %}
+
       <div class="container product-group">
         <div class="row row-cols-2 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 row-cols-xl-5 g-3">
         {% for product in data %}

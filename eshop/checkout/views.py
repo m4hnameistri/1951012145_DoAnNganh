@@ -3,13 +3,16 @@ from django.shortcuts import get_object_or_404,render
 from django.urls import reverse
 import uuid
 from cart.cart import Cart
-from store.models import Order, OrderItem
+from store.models import Order, OrderItem, Stock, Product
+from django.db.models import F
 from django.conf import settings
 from decimal import Decimal
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
 from store.forms import CheckoutForm
 from paypal.standard.forms import PayPalPaymentsForm
 
+@login_required
 def paypal_form(request):
     # order_id = request.session.get('order_id')
     # order = get_object_or_404(Order, id=order_id)
@@ -78,9 +81,13 @@ def payment_completed(request):
     #         OrderItem.objects.create(order = order , product = item['product'], price = item['price'], quantity = item['soluong'])   
     for item in cart:
         OrderItem.objects.create(order = order , product = item['product'], price = item['price'], quantity = item['soluong'])   
+        s = Stock.objects.filter(product=item['product'])
+        s.update(stock_quantity = F('stock_quantity') - item['soluong'])
+        if s.first().stock_quantity <= 0:
+            Product.objects.filter(id = item['product'].id).update(is_active = False)
+            
     # Order.objects.filter(order_key= order.order_key).update(billing_status=True)
     Order.objects.filter(id = order.id).update(billing_status=True, total_paid = cart.total_cart_price())
-
 
     cart.clear()
     return render(request, 'checkout/payment_successful.html')

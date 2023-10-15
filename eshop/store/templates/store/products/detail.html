@@ -57,7 +57,12 @@
                                 
                                   </script>
                             </div>
-                            <div class="col-6 text-end"><button type="button" id="add-button" value= "{{product.id}}" class="btn btn-secondary btn-sm">Thêm vào giỏ</button></div>
+                            <div class="col-6 text-end"><button type="button" id="add-button" value= "{{product.id}}" class="btn btn-success btn-sm">
+                                {% if not product.is_active %}Hết hàng
+                                {% else %}
+                                Thêm vào giỏ
+                                {% endif %}</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -87,5 +92,8 @@
             }
         });
     })
+    {% if not product.is_active %}
+        document.getElementById('add-button').classList.add('disabled')
+    {% endif %}
 </script>
 {% endblock %}

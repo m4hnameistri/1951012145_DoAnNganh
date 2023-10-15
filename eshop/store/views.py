@@ -23,7 +23,7 @@ from django.core.mail import EmailMessage
 from django.core.paginator import Paginator
 
 from .models import Category, Product
-from .forms import (CreateUserForm, EditInfoForm)
+from .forms import (CreateUserForm, EditInfoForm, PasswordChangeForm, ResetPasswordForm)
 # Create your views here.
 
 
@@ -82,6 +82,8 @@ def search(request):
         data = data.order_by('-price')
     if sorting == 'latest':
         data = data.order_by('created')
+    if not data.count():
+        messages.error(request,'Không tìm thấy sản phẩm!')
     return render(request,'products/search.html',{'data':data})
 
 # def user_register(request):
@@ -137,7 +139,7 @@ def user_register(request):
             user = form.save(commit= False)
             # This save() method accepts an optional commit keyword argument, which accepts either True or False. 
             # If you call save() with commit=False, then it will return an object that hasn't yet been saved to the database.
-
+            user.username = form.cleaned_data['username']
             user.email = form.cleaned_data['email']
             # user.username = form.cleaned_data['user_name']
             user.set_password(form.cleaned_data['password'])
@@ -159,8 +161,9 @@ def user_register(request):
             # user.email_user(subject = subject, message = message)
             email = EmailMessage(subject = subject, body = message, to= [user.email])
             if email.send():
-                return HttpResponse("Registration Successful !" f'Dear <b>{user}</b>, please go to you email <b>{user.email}</b> inbox and click on \
-                received activation link to confirm and complete the registration. <b>Note:</b> Check your spam folder.' )
+                # return HttpResponse("Registration Successful !" f'Dear <b>{user}</b>, please go to you email <b>{user.email}</b> inbox and click on \
+                # received activation link to confirm and complete the registration. <b>Note:</b> Check your spam folder.' )
+                messages.success(request, 'Đã gửi mail kích hoạt tài khoản!'f' Hãy kiểm tra mail {user.email}')
             else:
                 return HttpResponse(request, f'Problem sending email to {user.email}, check if you typed it correctly.')
     else:
@@ -178,8 +181,8 @@ def user_activate(request, uidb64, token):
     if user is not None and activation_token.check_token(user,token):
         user.is_active = True
         user.save()
-        login(request, user)
-        return redirect('store:dashboard')
+        messages.success(request, 'Kích hoạt tài khoản thành công! Giờ bạn có thể đăng nhập với tài khoản vừa tạo')
+        return redirect('store:login')
     else:
         return render(request, 'account/fail_to_activate.html')
 
@@ -209,6 +212,87 @@ def edit_info(request):
         user_form = EditInfoForm(instance = request.user)
     return render(request, "account/edit_info.html", {'user_form': user_form})
 
+@login_required
+def password_change(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Đổi mật khẩu thành công")
+            return redirect('store:login')
+        else:
+            for error in form.errors.values():
+                messages.error(request, error)
+    form = PasswordChangeForm(request.user)
+
+    return render(request, "account/password_change.html", {'form': form})
+
+def reset_password(request):
+    if request.method == 'POST':
+        form = ResetPasswordForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            user = User.objects.filter(email = email).first()
+            if user:
+                #Setup email
+                current_site = get_current_site(request)
+                subject = 'Yêu cầu thay đổi mật khẩu    '
+                message = render_to_string('account/password_reset_email.html',
+                {
+                    'user': user,
+                    'domain': current_site.domain,
+                    'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                    # encoding a byte string into base64 string so we can use it in the url,
+                    'token': activation_token.make_token(user),
+                    'protocol': 'https' if request.is_secure() else 'http'
+                })
+                email = EmailMessage(subject=subject, body = message, to=[user.email])
+                if email.send():
+                    # messages.success(request,
+                    #     """
+                    #     <h2>Password reset sent</h2><hr>
+                    #     <p>
+                    #         We've emailed you instructions for setting your password, if an account exists with the email you entered. 
+                    #         You should receive them shortly.<br>If you don't receive an email, please make sure you've entered the address 
+                    #         you registered with, and check your spam folder.
+                    #     </p>
+                    #     """
+                    # )
+                    messages.success(request, "Đã gửi mail xác thực tài khoản")
+
+                else:
+                    messages.error(request, f'Có lỗi khi gửi mail {user.email}, hãy kiểm tra bạn đã nhập đúng mail chưa.')
+            # return redirect('/')
+        
+    else:
+        form = ResetPasswordForm()
+
+    return render(request, 'account/password_reset_form.html', {'form': form})
+
+def password_reset_confirm(request, uidb64, token):
+
+    try:
+        uid = force_text(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, user.DoesNotExist):
+        user = None
+    if user is not None and activation_token.check_token(user,token):
+        if request.method == 'POST':
+            form = PasswordChangeForm(user, request.POST)
+            if form.is_valid():
+                form.save()
+                messages.success(request, 'Mật khẩu của bạn đã được thay đổi. Bây giờ bạn có thể đăng nhập tài khoản với mật khẩu mới.')
+                return redirect('store:login')
+            else:
+                for error in form.errors.values():
+                    messages.error(request, error)
+        form = PasswordChangeForm(user)
+        return render(request, 'account/password_change.html', {'form': form})
+    else:
+        messages.error(request, 'Email người dùng không có trong hệ thống hoặc link xác thực đã hết hạn! Vui lòng kiểm tra lại')
+        return redirect('store:login')
+
+@login_required
 def user_orders(request):
     user_id = request.user.id
     orders = Order.objects.filter(user_id=user_id).filter(billing_status=True)

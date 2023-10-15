@@ -128,6 +128,14 @@ class OrderItem(models.Model):
 
     def __str__(self):
         return str(self.id)
+    
+class Stock(models.Model):
+    product = models.ForeignKey(Product, related_name='stock', on_delete=models.CASCADE)
+    stock_quantity = models.IntegerField(default = 1)
+
+    def __str__(self):
+        return str(self.id)
+    
 
 
     
