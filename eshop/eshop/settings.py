@@ -111,23 +111,23 @@ WSGI_APPLICATION = 'eshop.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
-
 # DATABASES = {
-#     "default": {
-#         "ENGINE": 'django.db.backends.mysql',
-#         "NAME": "hasakedb",
-#         "USER": "root",
-#         "PASSWORD": "Saym4hnamecun",
-#         "HOST": "127.0.0.1",
-#         "PORT": "3306",
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
 #     }
 # }
+
+DATABASES = {
+    "default": {
+        "ENGINE": 'django.db.backends.mysql',
+        "NAME": "hasakedb",
+        "USER": "root",
+        "PASSWORD": "Saym4hnamecun",
+        "HOST": "127.0.0.1",
+        "PORT": "3306",
+    }
+}
 
 AUTH_USER_MODEL = 'store.User'
 
