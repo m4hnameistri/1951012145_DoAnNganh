@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'cart.apps.CartConfig',
     'checkout.apps.CheckoutConfig',
     'paypal.standard.ipn',
+    'django_dump_load_utf8',
     'mathfilters',
     'crispy_forms',
     'crispy_bootstrap4',
@@ -62,7 +63,7 @@ JAZZMIN_SETTINGS = {
         {"name": "Home",  "url": "admin:index", "permissions": ["auth.view_user"]},
 
         # external url that opens in a new window (Permissions can be added)
-        {"name": "Thống kê", "url": "chart/"},
+        {"name": "Thống kê", "url": "admin:chart"},
 
         # model admin to link to (Permissions checked against model)
         {"model": "auth.User"},
@@ -110,10 +111,21 @@ WSGI_APPLICATION = 'eshop.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": 'django.db.backends.mysql',
+        "NAME": "hasakedb",
+        "USER": "root",
+        "PASSWORD": "Saym4hnamecun",
+        "HOST": "127.0.0.1",
+        "PORT": "3306",
     }
 }
 

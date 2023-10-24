@@ -78,6 +78,9 @@
                             {% if user.is_authenticated %}
                                 <li><a class="dropdown-item" href="{% url 'store:profile' %}">Thông tin người dùng</a></li>
                                 <li><a class="dropdown-item" href="{% url 'store:dashboard' %}">Đơn hàng của bạn</a></li>
+                                {% if user.is_superuser %}
+                                <li><a class="dropdown-item" href="{% url 'admin:index' %}">Admin</a></li>
+                                {% endif %}
                                 <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item" href="{% url 'store:logout' %}">Đăng xuất</a></li>
                             {% else %}

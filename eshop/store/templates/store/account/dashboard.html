@@ -1,4 +1,4 @@
-{% extends '.\base.html' %}
+{% extends '../base.html' %}
 {% load static %}
 {% load humanize %}
 {% block title %}Cart Summary{%endblock %}
@@ -34,8 +34,8 @@
       </div>
       <div class="col-md-5 col-lg-4 order-md-last p-0 order-3">
         <div class="d-grid gap-2 ">
-          <button class="btn btn-warning" type="button">Hàng hóa có vấn đề ?</button>
-          <button class="btn btn-primary" type="button">Bình luận</button>
+          {% comment %} <button class="btn btn-warning" type="button">Hàng hóa có vấn đề ?</button>
+          <button class="btn btn-primary" type="button">Bình luận</button> {% endcomment %}
         </div>
       </div>
 

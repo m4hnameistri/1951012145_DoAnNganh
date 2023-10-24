@@ -14,7 +14,7 @@ class CustomAdminSite(admin.AdminSite):
 
     def get_urls(self) -> list[URLResolver]:
         return [
-            path("chart/", self.stats_view)
+            path("chart/", self.stats_view, name='chart')
         ] + super().get_urls()
     
     def stats_view(self, request):
