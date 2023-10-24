@@ -41,7 +41,7 @@ class CustomAdminSite(admin.AdminSite):
 custom_admin_site = CustomAdminSite('myweb')
 
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('id','created','total_paid','billing_status')
+    list_display = ('id','created','user_id','total_paid','billing_status')
     list_editable = ('billing_status',)
 class OrderItemAdmin(admin.ModelAdmin):
     list_display = ('id','order','product','price', 'quantity')
@@ -50,11 +50,16 @@ class ProductAdmin(admin.ModelAdmin):
     list_display = ('id','title', 'category', 'price', 'in_stock', 'is_active')
     list_editable = ('is_active',)
 
+class UserAdmin(admin.ModelAdmin):
+    list_display = ('id', 'is_active', 'is_superuser', 'first_name', 'last_name', 'email')
+
+class StockAdmin(admin.ModelAdmin):
+    list_display = ('id', 'product_id', 'stock_quantity', 'from_date', 'to_date')
 
 custom_admin_site.register(Category)
 custom_admin_site.register(Product, ProductAdmin)
-custom_admin_site.register(User)
+custom_admin_site.register(User, UserAdmin)
 custom_admin_site.register(Order, OrderAdmin)
 custom_admin_site.register(OrderItem, OrderItemAdmin)
-custom_admin_site.register(Stock)
+custom_admin_site.register(Stock, StockAdmin)
 
