@@ -5,6 +5,7 @@ from turtle import title
 from unicodedata import category
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
+from datetime import datetime
 from django.urls import reverse
 from pkg_resources import require
 from django.utils.translation import ugettext_lazy as _
@@ -132,6 +133,8 @@ class OrderItem(models.Model):
 class Stock(models.Model):
     product = models.ForeignKey(Product, related_name='stock', on_delete=models.CASCADE)
     stock_quantity = models.IntegerField(default = 1)
+    from_date = models.DateTimeField(auto_now_add=True)
+    to_date = models.DateTimeField(default=datetime.now())
 
     def __str__(self):
         return str(self.id)
